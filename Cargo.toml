@@ -6,3 +6,5 @@ build = "build.rs"
 
 [dependencies]
 ggez = "0.4"
+nalgebra = "0.14.1"
+ncollide = "*"

@@ -5,9 +5,10 @@ extern crate nalgebra;
 use ggez::*;
 use ggez::conf::*;
 
-mod state;
+mod game_state;
 mod body;
-mod entity;
+mod entity_manager;
+mod player;
 
 fn main() {
     let cb = ContextBuilder::new("RustArcadeShooter", "Infinity")
@@ -19,7 +20,7 @@ fn main() {
 
     let ctx = &mut cb.build().unwrap();
 
-    let state = &mut state::MainState::new(ctx).unwrap();
+    let game_state = &mut game_state::GameState::new(ctx).unwrap();
     
-    event::run(ctx, state).unwrap();
+    event::run(ctx, game_state).unwrap();
 }

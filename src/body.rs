@@ -21,3 +21,15 @@ impl Body {
         }
     }
 }
+
+impl Clone for Body {
+    fn clone(&self) -> Self {
+        Body {
+            pos: Vector2::new(self.pos.x, self.pos.y),
+            size: Vector2::new(self.size.x, self.size.y),
+            collidable: self.collidable,
+            velocity: Vector2::new(self.velocity.x, self.velocity.y),
+            rotation: self.rotation
+        }
+    }
+}

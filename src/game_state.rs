@@ -1,6 +1,5 @@
 use ggez::*;
 use ggez::event::{Keycode, Mod};
-use super::body::*;
 
 pub struct GameState {
 

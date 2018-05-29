@@ -16,7 +16,7 @@ impl MainState {
 
 impl event::EventHandler for MainState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult<()> {
-        let body_test = Body::new(10.0, 10.0, 10.0, 10.0, true);
+        
         Ok(())
     }
 

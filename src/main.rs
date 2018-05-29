@@ -8,6 +8,7 @@ use ggez::conf::*;
 mod state;
 mod body;
 mod entity;
+mod entityManager;
 
 fn main() {
     let cb = ContextBuilder::new("RustArcadeShooter", "Infinity")

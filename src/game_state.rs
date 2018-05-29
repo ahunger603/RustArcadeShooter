@@ -2,19 +2,19 @@ use ggez::*;
 use ggez::event::{Keycode, Mod};
 use super::body::*;
 
-pub struct MainState {
+pub struct GameState {
 
 }
 
-impl MainState {
-    pub fn new(mut _ctx: &mut Context) -> GameResult<MainState> {
-        Ok(MainState {
+impl GameState {
+    pub fn new(mut _ctx: &mut Context) -> GameResult<GameState> {
+        Ok(GameState {
             
         })
     }
 }
 
-impl event::EventHandler for MainState {
+impl event::EventHandler for GameState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult<()> {
         
         Ok(())

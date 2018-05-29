@@ -1,14 +1,15 @@
 use ggez::*;
 use ggez::event::{Keycode, Mod};
+use super::entity_manager::*;
 
 pub struct GameState {
-
+    entity_manager: EntityManager
 }
 
 impl GameState {
     pub fn new(mut _ctx: &mut Context) -> GameResult<GameState> {
         Ok(GameState {
-            
+            entity_manager: EntityManager::new()
         })
     }
 }

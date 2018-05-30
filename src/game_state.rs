@@ -20,10 +20,14 @@ impl GameState {
     }
 }
 
+fn get_interpolation_value(game_state: &GameState) -> f32 {
+    (game_state.last_update.elapsed().subsec_nanos() / 1_000_000) as f32 / (MS_PER_UPDATE as f32)
+}
+
 impl event::EventHandler for GameState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult<()> {
         if self.last_update.elapsed() > Duration::from_millis(MS_PER_UPDATE) {
-            
+
             self.entity_manager.update();
 
             self.last_update = Instant::now();
@@ -34,7 +38,8 @@ impl event::EventHandler for GameState {
     fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
         graphics::clear(ctx);
         graphics::set_background_color(ctx, graphics::BLACK);
-        self.entity_manager.draw(ctx);
+        let interpolation_value = get_interpolation_value(self);
+        self.entity_manager.draw(ctx, interpolation_value);
         graphics::present(ctx);
         Ok(())
     }

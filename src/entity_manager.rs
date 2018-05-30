@@ -19,7 +19,7 @@ impl EntityManager {
         self.player.update();
     }
 
-    pub fn draw(&self, ctx: &mut Context) {
-        self.player.draw(ctx);
+    pub fn draw(&self, ctx: &mut Context, interpolation_value: f32) {
+        self.player.draw(ctx, interpolation_value);
     }
 }

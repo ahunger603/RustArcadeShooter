@@ -20,7 +20,7 @@ impl Entity for Player {
 
     }
 
-    fn draw(&self, ctx: &mut Context) {
+    fn draw(&self, ctx: &mut Context, interpolation_value: f32) {
         
     }
 

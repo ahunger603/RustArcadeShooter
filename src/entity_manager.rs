@@ -1,4 +1,5 @@
 use ggez::*;
+use super::asset_manager::*;
 use super::entity::*;
 use super::player::*;
 
@@ -19,7 +20,7 @@ impl EntityManager {
         self.player.update();
     }
 
-    pub fn draw(&self, ctx: &mut Context, interpolation_value: f32) {
-        self.player.draw(ctx, interpolation_value);
+    pub fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32) {
+        self.player.draw(asset_manager, ctx, interpolation_value);
     }
 }

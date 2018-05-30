@@ -43,7 +43,7 @@ impl event::EventHandler for GameState {
         graphics::clear(ctx);
         graphics::set_background_color(ctx, graphics::BLACK);
         let interpolation_value = get_interpolation_value(self);
-        self.entity_manager.draw(ctx, interpolation_value);
+        self.entity_manager.draw(&self.asset_manager, ctx, interpolation_value);
         graphics::present(ctx);
         Ok(())
     }

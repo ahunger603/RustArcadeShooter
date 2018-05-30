@@ -21,7 +21,7 @@ impl Entity for Player {
     }
 
     fn draw(&self, ctx: &mut Context) {
-
+        
     }
 
     fn get_body(&self) -> Option<Body> {

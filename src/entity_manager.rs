@@ -15,11 +15,11 @@ impl EntityManager {
         }
     }
 
-    fn update(&mut self) {
-        
+    pub fn update(&mut self) {
+        self.player.update();
     }
 
-    fn draw(&self, ctx: &mut Context) {
-
+    pub fn draw(&self, ctx: &mut Context) {
+        self.player.draw(ctx);
     }
 }

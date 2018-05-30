@@ -21,7 +21,7 @@ impl Entity for Player {
     }
 
     fn draw(&self, ctx: &mut Context, interpolation_value: f32) {
-        
+        println!("{:?}", interpolation_value);
     }
 
     fn get_body(&self) -> Option<Body> {

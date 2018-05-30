@@ -27,9 +27,7 @@ fn get_interpolation_value(game_state: &GameState) -> f32 {
 impl event::EventHandler for GameState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult<()> {
         if self.last_update.elapsed() > Duration::from_millis(MS_PER_UPDATE) {
-
             self.entity_manager.update();
-
             self.last_update = Instant::now();
         }
         Ok(())

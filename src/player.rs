@@ -15,6 +15,16 @@ impl Player {
             body: Body::new(300.0, 300.0, 10.0, 10.0, f32::consts::PI/2.0, true)
         }
     }
+
+    fn get_draw_param(&self, interpolation_value: f32) -> graphics::DrawParam  {
+        let body = &self.body;
+        graphics::DrawParam {
+            dest: Point2::new(body.pos.x, body.pos.y),
+            rotation: body.rotation,
+            offset: Point2::new(0.5, 0.5),
+            .. Default::default()
+        }
+    }
 }
 
 impl Entity for Player {
@@ -23,17 +33,10 @@ impl Entity for Player {
     }
 
     fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32) {
-        let image_dim = asset_manager.player.get_dimensions();
-        let body = &self.body;
         graphics::draw_ex(
             ctx,
             &asset_manager.player,
-            graphics::DrawParam {
-                dest: Point2::new(body.pos.x, body.pos.y),
-                rotation: body.rotation,
-                offset: Point2::new(0.5, 0.5),
-                .. Default::default()
-            }
+            self.get_draw_param(interpolation_value)
         ).unwrap();
     }
 

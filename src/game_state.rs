@@ -50,15 +50,21 @@ impl event::EventHandler for GameState {
 
     fn key_down_event(
         &mut self,
-        _ctx: &mut Context,
+        ctx: &mut Context,
         keycode: Keycode,
-        _keymod: Mod,
-        _repeat: bool,
+        keymod: Mod,
+        repeat: bool
     ) {
-        
+        println!("{:?} - down", keycode);
     }
 
-    fn key_up_event(&mut self, _ctx: &mut Context, _keycode: Keycode, _keymod: Mod, _repeat: bool) {
-        
+    fn key_up_event(
+        &mut self,
+        ctx: &mut Context,
+        keycode: Keycode,
+        keymod: Mod,
+        repeat: bool
+    ) {
+        println!("{:?} - up", keycode);
     }
 }

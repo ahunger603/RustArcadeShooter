@@ -6,12 +6,14 @@ use super::body::*;
 use super::asset_manager::*;
 
 pub struct Player {
+    move_dir: [bool; 4], //up, down, left, right
     body: Body
 }
 
 impl Player {
     pub fn new() -> Player {
         Player {
+            move_dir: [false; 4],
             body: Body::new(300.0, 300.0, 10.0, 10.0, f32::consts::PI/2.0, true)
         }
     }
@@ -26,18 +28,41 @@ impl Player {
         }
     }
 
-    pub fn move_dir(&self, dir: u16) {
-
+    fn get_movement_vector(&self) -> [i16; 2] {
+        let mut movement_vec = [0; 2];
+        if self.move_dir[0] {
+            movement_vec[0] += 1;
+        }
+        if self.move_dir[1] {
+            movement_vec[0] -= 1;
+        }
+        if self.move_dir[2] {
+            movement_vec[1] += 1;
+        }
+        if self.move_dir[3] {
+            movement_vec[1] -= 1;
+        }
+        movement_vec
     }
 
-    pub fn move_dir_cancel(&self, dir: u16) {
+    pub fn move_dir(&mut self, dir: u16) {
+        if dir > 4 {
+            return;
+        }
+        self.move_dir[dir as usize] = true;
+    }
 
+    pub fn move_dir_cancel(&mut self, dir: u16) {
+        if dir > 4 {
+            return;
+        }
+        self.move_dir[dir as usize] = false;
     }
 }
 
 impl Entity for Player {
     fn update(&mut self) {
-        
+        println!("{:?}", self.get_movement_vector());
     }
 
     fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32) {

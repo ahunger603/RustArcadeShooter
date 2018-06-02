@@ -55,7 +55,14 @@ impl event::EventHandler for GameState {
         keymod: Mod,
         repeat: bool
     ) {
-        println!("{:?} - down", keycode);
+        //println!("{:?} - down", keycode);
+        match keycode {
+            Keycode::W => self.entity_manager.player_move(0),
+            Keycode::S => self.entity_manager.player_move(1),
+            Keycode::D => self.entity_manager.player_move(2),
+            Keycode::A => self.entity_manager.player_move(3),
+            _ => {}
+        }
     }
 
     fn key_up_event(
@@ -65,6 +72,13 @@ impl event::EventHandler for GameState {
         keymod: Mod,
         repeat: bool
     ) {
-        println!("{:?} - up", keycode);
+        //println!("{:?} - up", keycode);
+        match keycode {
+            Keycode::W => self.entity_manager.player_move_cancel(0),
+            Keycode::S => self.entity_manager.player_move_cancel(1),
+            Keycode::D => self.entity_manager.player_move_cancel(2),
+            Keycode::A => self.entity_manager.player_move_cancel(3),
+            _ => {}
+        }
     }
 }

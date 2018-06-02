@@ -23,4 +23,12 @@ impl EntityManager {
     pub fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32) {
         self.player.draw(asset_manager, ctx, interpolation_value);
     }
+
+    pub fn player_move(&self, dir: u16) {
+        self.player.move_dir(dir);
+    }
+
+    pub fn player_move_cancel(&self, dir: u16) {
+        self.player.move_dir_cancel(dir);
+    }
 }

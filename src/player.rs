@@ -25,6 +25,14 @@ impl Player {
             .. Default::default()
         }
     }
+
+    pub fn move_dir(&self, dir: u16) {
+
+    }
+
+    pub fn move_dir_cancel(&self, dir: u16) {
+
+    }
 }
 
 impl Entity for Player {

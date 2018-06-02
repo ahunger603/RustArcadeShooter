@@ -1,11 +1,13 @@
 use std::f32;
 use ggez::*;
+use nalgebra::Vector2;
 use nalgebra::Point2;
 use super::entity::*;
 use super::body::*;
 use super::asset_manager::*;
 
 pub struct Player {
+    movement_speed: f32,
     move_dir: [bool; 4], //up, down, left, right
     body: Body
 }
@@ -13,6 +15,7 @@ pub struct Player {
 impl Player {
     pub fn new() -> Player {
         Player {
+            movement_speed: 20.0,
             move_dir: [false; 4],
             body: Body::new(300.0, 300.0, 10.0, 10.0, f32::consts::PI/2.0, true)
         }
@@ -20,29 +23,40 @@ impl Player {
 
     fn get_draw_param(&self, interpolation_value: f32) -> graphics::DrawParam  {
         let body = &self.body;
+        let movement_vector = body.get_movement_vector();
         graphics::DrawParam {
-            dest: Point2::new(body.pos.x, body.pos.y),
+            dest: Point2::new(body.pos.x + movement_vector[0]*interpolation_value, body.pos.y - movement_vector[1]*interpolation_value),
             rotation: body.rotation,
             offset: Point2::new(0.5, 0.5),
             .. Default::default()
         }
     }
 
-    fn get_movement_vector(&self) -> [i16; 2] {
-        let mut movement_vec = [0; 2];
+    fn get_direction_vector(&self) -> [f32; 2] {
+        let mut movement_vec: [f32; 2] = [0.0; 2];
         if self.move_dir[0] {
-            movement_vec[0] += 1;
+            movement_vec[0] += 1.0;
         }
         if self.move_dir[1] {
-            movement_vec[0] -= 1;
+            movement_vec[0] -= 1.0;
         }
         if self.move_dir[2] {
-            movement_vec[1] += 1;
+            movement_vec[1] += 1.0;
         }
         if self.move_dir[3] {
-            movement_vec[1] -= 1;
+            movement_vec[1] -= 1.0;
         }
         movement_vec
+    }
+
+    fn get_movement_velocity(&self) -> Vector2<f32> {
+        let dir_vec = self.get_direction_vector();
+        let mut move_speed = 0.0;
+        if dir_vec[0] != 0.0 || dir_vec[1] != 0.0 {
+            move_speed = self.movement_speed;
+        }
+        let direction_angle = (dir_vec[0]).atan2(dir_vec[1]);
+        Vector2::new(move_speed, direction_angle)
     }
 
     pub fn move_dir(&mut self, dir: u16) {
@@ -62,7 +76,10 @@ impl Player {
 
 impl Entity for Player {
     fn update(&mut self) {
-        println!("{:?}", self.get_movement_vector());
+        self.body.velocity = self.get_movement_velocity();
+        let movement_vector = self.body.get_movement_vector();
+        self.body.pos.x += movement_vector[0];
+        self.body.pos.y -= movement_vector[1];
     }
 
     fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32) {

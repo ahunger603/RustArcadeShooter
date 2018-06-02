@@ -20,6 +20,13 @@ impl Body {
             rotation
         }
     }
+
+    pub fn get_movement_vector(&self) -> Vector2<f32> {
+        Vector2::new(
+            self.velocity[1].cos()*self.velocity[0],
+            self.velocity[1].sin()*self.velocity[0]
+        )
+    }
 }
 
 impl Clone for Body {

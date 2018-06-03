@@ -21,6 +21,7 @@ fn get_context_builder() -> Option<ContextBuilder> {
             .window_mode(conf::WindowMode::default()
                 .dimensions(640, 480)
                 .fullscreen_type(FullscreenType::Off)
+                .vsync(true)
             );
         let mut path = path::PathBuf::from(manifest_dir);
         path.push("assets");

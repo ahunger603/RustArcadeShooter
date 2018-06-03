@@ -15,7 +15,7 @@ pub struct Player {
 impl Player {
     pub fn new() -> Player {
         Player {
-            movement_speed: 20.0,
+            movement_speed: 8.0,
             move_dir: [false; 4],
             body: Body::new(300.0, 300.0, 10.0, 10.0, f32::consts::PI/2.0, true)
         }
@@ -33,29 +33,30 @@ impl Player {
     }
 
     fn get_direction_vector(&self) -> [f32; 2] {
-        let mut movement_vec: [f32; 2] = [0.0; 2];
+        let mut dir_vec: [f32; 2] = [0.0; 2];
         if self.move_dir[0] {
-            movement_vec[0] += 1.0;
+            dir_vec[0] += 1.0;
         }
         if self.move_dir[1] {
-            movement_vec[0] -= 1.0;
+            dir_vec[0] -= 1.0;
         }
         if self.move_dir[2] {
-            movement_vec[1] += 1.0;
+            dir_vec[1] += 1.0;
         }
         if self.move_dir[3] {
-            movement_vec[1] -= 1.0;
+            dir_vec[1] -= 1.0;
         }
-        movement_vec
+        dir_vec
     }
 
     fn get_movement_velocity(&self) -> Vector2<f32> {
         let dir_vec = self.get_direction_vector();
-        let mut move_speed = 0.0;
-        if dir_vec[0] != 0.0 || dir_vec[1] != 0.0 {
-            move_speed = self.movement_speed;
-        }
-        let direction_angle = (dir_vec[0]).atan2(dir_vec[1]);
+        let move_speed = if dir_vec[0] != 0.0 || dir_vec[1] != 0.0 {
+            self.movement_speed
+        } else {
+            0.0
+        };
+        let direction_angle = dir_vec[0].atan2(dir_vec[1]);
         Vector2::new(move_speed, direction_angle)
     }
 

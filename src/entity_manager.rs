@@ -3,8 +3,14 @@ use super::asset_manager::*;
 use super::entity::*;
 use super::player::*;
 
+struct Projectile {
+    projectile: Box<Entity>,
+    played_owned: bool
+}
+
 pub struct EntityManager {
     player: Player,
+    projectiles: Vec<Projectile>,
     enemies: Vec<Box<Entity>>
 }
 
@@ -12,6 +18,7 @@ impl EntityManager {
     pub fn new() -> EntityManager {
         EntityManager {
             player: Player::new(),
+            projectiles: vec![],
             enemies: vec![]
         }
     }

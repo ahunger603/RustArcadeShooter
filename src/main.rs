@@ -13,13 +13,18 @@ mod entity;
 mod entity_manager;
 mod asset_manager;
 mod player;
+mod drone;
+mod camera;
+
+const WINDOW_W: u32 = 640;
+const WINDOW_H: u32 = 640;
 
 fn get_context_builder() -> Option<ContextBuilder> {
     if let Ok(manifest_dir) = env::var("CARGO_MANIFEST_DIR") {
         let mut cb = ContextBuilder::new("RustArcadeShooter", "Infinity")
             .window_setup(conf::WindowSetup::default().title("Rust Arcade Shooter"))
             .window_mode(conf::WindowMode::default()
-                .dimensions(640, 480)
+                .dimensions(WINDOW_W, WINDOW_H)
                 .fullscreen_type(FullscreenType::Off)
                 .vsync(true)
             );
@@ -36,7 +41,7 @@ fn main() {
     if let Some(cb) = get_context_builder() {
         let ctx = &mut cb.build().unwrap();
 
-        let game_state = &mut game_state::GameState::new(ctx).unwrap();
+        let game_state = &mut game_state::GameState::new(ctx, WINDOW_W, WINDOW_H).unwrap();
 
         event::run(ctx, game_state).unwrap();
     } else {

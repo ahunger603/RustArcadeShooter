@@ -17,7 +17,7 @@ impl Player {
         Player {
             movement_speed: 8.0,
             move_dir: [false; 4],
-            body: Body::new(300.0, 300.0, 10.0, 10.0, f32::consts::PI/2.0, true)
+            body: Body::new(300.0, 300.0, 136.0, 96.0, f32::consts::PI/2.0, true)
         }
     }
 
@@ -27,6 +27,7 @@ impl Player {
         graphics::DrawParam {
             dest: Point2::new(body.pos.x + movement_vector[0]*interpolation_value, body.pos.y - movement_vector[1]*interpolation_value),
             rotation: body.rotation,
+            scale: Point2::new(0.75, 0.75),
             offset: Point2::new(0.5, 0.5),
             .. Default::default()
         }

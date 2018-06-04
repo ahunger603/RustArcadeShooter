@@ -3,6 +3,7 @@ use ggez::*;
 use ggez::event::{Keycode, Mod};
 use super::entity_manager::*;
 use super::asset_manager::*;
+use super::camera::*;
 
 const MAX_UPDATES_PER_SECOND: u32 = 60;
 const MS_PER_UPDATE: u64 = ((1.0/MAX_UPDATES_PER_SECOND as f64)*1000.0) as u64;
@@ -12,6 +13,7 @@ const MS_PER_FRAME: u64 = ((1.0/MAX_FRAMES_PER_SECOND as f64)*1000.0) as u64;
 pub struct GameState {
     last_update: Instant,
     last_draw: Instant,
+    camera: Camera,
     entity_manager: EntityManager,
     asset_manager: AssetManager
 }
@@ -22,6 +24,7 @@ impl GameState {
             return Ok(GameState {
                 last_update: Instant::now(),
                 last_draw: Instant::now(),
+                camera: Camera::new(window_w, window_h),
                 entity_manager: EntityManager::new(),
                 asset_manager
             });
@@ -49,7 +52,7 @@ impl event::EventHandler for GameState {
             graphics::clear(ctx);
             graphics::set_background_color(ctx, graphics::BLACK);
             let interpolation_value = get_interpolation_value(self);
-            self.entity_manager.draw(&self.asset_manager, ctx, interpolation_value);
+            self.entity_manager.draw(&self.asset_manager, ctx, interpolation_value, &self.camera);
             graphics::present(ctx);
 
             self.last_draw = Instant::now();

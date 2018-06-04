@@ -17,7 +17,7 @@ mod drone;
 mod camera;
 
 const WINDOW_W: u32 = 640;
-const WINDOW_H: u32 = 640;
+const WINDOW_H: u32 = 480;
 
 fn get_context_builder() -> Option<ContextBuilder> {
     if let Ok(manifest_dir) = env::var("CARGO_MANIFEST_DIR") {

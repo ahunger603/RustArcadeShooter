@@ -5,6 +5,8 @@ use nalgebra::Point2;
 use super::entity::*;
 use super::body::*;
 use super::asset_manager::*;
+use super::camera::*;
+
 
 pub struct Player {
     movement_speed: f32,
@@ -17,17 +19,22 @@ impl Player {
         Player {
             movement_speed: 8.0,
             move_dir: [false; 4],
-            body: Body::new(300.0, 300.0, 136.0, 96.0, f32::consts::PI/2.0, true)
+            body: Body::new(300.0, 300.0, 136.0, 96.0, 0.75, 0.75, f32::consts::PI/2.0, true)
         }
     }
 
-    fn get_draw_param(&self, interpolation_value: f32) -> graphics::DrawParam  {
+    fn get_draw_param(&self, interpolation_value: f32, camera: &Camera) -> graphics::DrawParam  {
         let body = &self.body;
         let movement_vector = body.get_movement_vector();
+        let view_position = camera.get_view_position(&Vector2::new(
+                body.pos.x + movement_vector[0]*interpolation_value,
+                body.pos.y + movement_vector[1]*interpolation_value
+            )
+        );
         graphics::DrawParam {
-            dest: Point2::new(body.pos.x + movement_vector[0]*interpolation_value, body.pos.y - movement_vector[1]*interpolation_value),
+            dest: Point2::new(view_position.x, view_position.y),
             rotation: body.rotation,
-            scale: Point2::new(0.75, 0.75),
+            scale: Point2::new(body.scale.x, body.scale.y),
             offset: Point2::new(0.5, 0.5),
             .. Default::default()
         }
@@ -81,14 +88,14 @@ impl Entity for Player {
         self.body.velocity = self.get_movement_velocity();
         let movement_vector = self.body.get_movement_vector();
         self.body.pos.x += movement_vector[0];
-        self.body.pos.y -= movement_vector[1];
+        self.body.pos.y += movement_vector[1];
     }
 
-    fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32) {
+    fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32, camera: &Camera) {
         graphics::draw_ex(
             ctx,
             &asset_manager.player,
-            self.get_draw_param(interpolation_value)
+            self.get_draw_param(interpolation_value, camera)
         ).unwrap();
     }
 

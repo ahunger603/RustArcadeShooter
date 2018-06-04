@@ -8,6 +8,7 @@ use super::asset_manager::*;
 use super::entity::*;
 use super::player::*;
 use super::drone::*;
+use super::camera::*;
 
 struct Projectile {
     projectile: Box<Entity>,
@@ -41,9 +42,9 @@ impl EntityManager {
         if let Some(body) = entity.get_body() {
             return if body.collidable {
                 Some(bounding_volume::aabb(
-                    &Cuboid2::new(body.size),
+                    &Cuboid2::new(body.get_scaled_size()),
                     &Isometry2::new(
-                        Vector2::new(body.pos.x - (body.size[0] / 2.0), body.pos.y - (body.size[1] / 2.0)), 
+                        Vector2::new(body.pos.x, body.pos.y), 
                         0.0)
                     )
                 )
@@ -65,15 +66,15 @@ impl EntityManager {
     fn resolve_player_enemy_collision(player_col_area: &bounding_volume::AABB<Point<f32, nalgebra::U2>>, enemy: &Box<Entity>) {
         if let Some(enemy_col_area) = EntityManager::create_entity_collision_area(&(*(*enemy))) {
             if player_col_area.intersects(&enemy_col_area) {
-                //println!("COLLISION");
+                println!("COLLISION");
             }
         }
     }
 
-    pub fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32) {
-        self.player.draw(asset_manager, ctx, interpolation_value);
+    pub fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32, camera: &Camera) {
+        self.player.draw(asset_manager, ctx, interpolation_value, camera);
         for enemy in &self.enemies {
-            enemy.draw(asset_manager, ctx, interpolation_value);
+            enemy.draw(asset_manager, ctx, interpolation_value, camera);
         }
     }
 

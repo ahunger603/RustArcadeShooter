@@ -70,6 +70,10 @@ impl EntityManager {
                                     println!("PROJECTILE COLLISION");
                             }
                         }
+                    } else {
+                        if projectile_col_area.intersects(&player_col_area) {
+                            println!("ENEMY PROJECTILE COLLISION");
+                        }
                     }
                 }
             }

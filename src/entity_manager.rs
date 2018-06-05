@@ -10,14 +10,8 @@ use super::player::*;
 use super::drone::*;
 use super::camera::*;
 
-struct Projectile {
-    projectile: Box<Entity>,
-    player_owned: bool
-}
-
 pub struct EntityManager {
     player: Player,
-    projectiles: Vec<Projectile>,
     enemies: Vec<Box<Entity>>
 }
 
@@ -25,8 +19,7 @@ impl EntityManager {
     pub fn new() -> EntityManager {
         EntityManager {
             player: Player::new(),
-            projectiles: vec![],
-            enemies: vec![Box::new(Drone::new())]
+            enemies: vec![Box::new(Drone::new(500.0, 300.0))]
         }
     }
 

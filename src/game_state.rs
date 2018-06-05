@@ -34,7 +34,7 @@ impl GameState {
 }
 
 fn get_interpolation_value(game_state: &GameState) -> f32 {
-    (game_state.last_update.elapsed().subsec_nanos() / 1_000_000) as f32 / (MS_PER_UPDATE as f32)
+    (game_state.last_update.elapsed().subsec_nanos() as f32 / 1_000_000.0 ) / (MS_PER_UPDATE as f32)
 }
 
 impl event::EventHandler for GameState {
@@ -51,10 +51,11 @@ impl event::EventHandler for GameState {
         if last_draw_elapsed > Duration::from_millis(MS_PER_FRAME) {
             graphics::clear(ctx);
             graphics::set_background_color(ctx, graphics::BLACK);
+
             let interpolation_value = get_interpolation_value(self);
             self.entity_manager.draw(&self.asset_manager, ctx, interpolation_value, &self.camera);
+           
             graphics::present(ctx);
-
             self.last_draw = Instant::now();
         } else {
             timer::sleep((Duration::from_millis(MS_PER_FRAME) - last_draw_elapsed) / 3);

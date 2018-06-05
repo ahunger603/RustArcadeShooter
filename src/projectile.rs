@@ -7,14 +7,14 @@ use super::body::*;
 use super::asset_manager::*;
 use super::camera::*;
 
-pub struct Drone {
+pub struct Projectile {
     body: Body
 }
 
-impl Drone {
-    pub fn new(x: f32, y: f32) -> Drone {
+impl Projectile {
+    pub fn new() -> Drone {
         Drone {
-            body: Body::new(x, y, 132.0, 128.0, 0.5, 0.5, (f32::consts::PI*3.0)/2.0, true)
+            body: Body::new(500.0, 300.0, 132.0, 128.0, 0.5, 0.5, (f32::consts::PI*3.0)/2.0, true)
         }
     }
 
@@ -36,7 +36,7 @@ impl Drone {
     }
 }
 
-impl Entity for Drone {
+impl Entity for Projectile {
     fn update(&mut self) {
         
     }

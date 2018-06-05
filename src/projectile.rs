@@ -8,13 +8,23 @@ use super::asset_manager::*;
 use super::camera::*;
 
 pub struct Projectile {
-    body: Body
+    body: Body,
+    player_owned: bool
 }
 
 impl Projectile {
-    pub fn new() -> Drone {
-        Drone {
-            body: Body::new(500.0, 300.0, 132.0, 128.0, 0.5, 0.5, (f32::consts::PI*3.0)/2.0, true)
+    pub fn new(x: f32, y: f32, player_owned: bool) -> Projectile {
+        let rotation = if player_owned {
+            f32::consts::PI/2.0
+        } else {
+            (f32::consts::PI*3.0)/2.0
+        };
+        let mut body = Body::new(x, y, 64.0, 32.0, 0.5, 0.5, rotation, true);
+        body.velocity = Vector2::new(15.0, 0.0);
+
+        Projectile {
+            body,
+            player_owned
         }
     }
 
@@ -34,17 +44,23 @@ impl Projectile {
             .. Default::default()
         }
     }
+
+    pub fn is_player_owned(&self) -> bool {
+        self.player_owned
+    }
 }
 
 impl Entity for Projectile {
     fn update(&mut self) {
-        
+        let movement_vector = self.body.get_movement_vector();
+        self.body.pos.x += movement_vector[0];
+        self.body.pos.y += movement_vector[1];
     }
 
     fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32, camera: &Camera) {
         graphics::draw_ex(
             ctx,
-            &asset_manager.drone1,
+            &asset_manager.projectile1,
             self.get_draw_param(interpolation_value, camera)
         ).unwrap();
     }

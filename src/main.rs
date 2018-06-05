@@ -15,6 +15,7 @@ mod asset_manager;
 mod player;
 mod drone;
 mod camera;
+mod projectile;
 
 const WINDOW_W: u32 = 640;
 const WINDOW_H: u32 = 480;

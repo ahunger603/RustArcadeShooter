@@ -70,12 +70,14 @@ impl event::EventHandler for GameState {
         keymod: Mod,
         repeat: bool
     ) {
-        //println!("{:?} - down", keycode);
         match keycode {
             Keycode::W => self.entity_manager.player_move(0),
             Keycode::S => self.entity_manager.player_move(1),
             Keycode::D => self.entity_manager.player_move(2),
             Keycode::A => self.entity_manager.player_move(3),
+            Keycode::Space => if !repeat {
+                self.entity_manager.player_fire()
+            },
             _ => {}
         }
     }
@@ -87,7 +89,6 @@ impl event::EventHandler for GameState {
         keymod: Mod,
         repeat: bool
     ) {
-        //println!("{:?} - up", keycode);
         match keycode {
             Keycode::W => self.entity_manager.player_move_cancel(0),
             Keycode::S => self.entity_manager.player_move_cancel(1),

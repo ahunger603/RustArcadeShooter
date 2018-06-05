@@ -9,9 +9,11 @@ use super::entity::*;
 use super::player::*;
 use super::drone::*;
 use super::camera::*;
+use super::projectile::*;
 
 pub struct EntityManager {
     player: Player,
+    projectiles: Vec<Projectile>,
     enemies: Vec<Box<Entity>>
 }
 
@@ -19,6 +21,7 @@ impl EntityManager {
     pub fn new() -> EntityManager {
         EntityManager {
             player: Player::new(),
+            projectiles: vec![],
             enemies: vec![Box::new(Drone::new(500.0, 300.0))]
         }
     }
@@ -28,6 +31,9 @@ impl EntityManager {
         for enemy in &mut self.enemies {
             enemy.update();
         }
+        for projectile in self.projectiles.iter_mut(){
+            projectile.update();
+        } 
         self.collision_resolution();
     }
 
@@ -51,23 +57,49 @@ impl EntityManager {
     fn collision_resolution(&mut self) {
         if let Some(player_col_area) = EntityManager::create_entity_collision_area(&self.player) {
             for enemy in &mut self.enemies {
-                EntityManager::resolve_player_enemy_collision(&player_col_area, enemy);
+                if EntityManager::is_col_area_entity_collision(&player_col_area, enemy) {
+                    println!("PLAYER COLLISION");
+                }
+            }
+
+            for projectile in self.projectiles.iter(){
+                if let Some(projectile_col_area) = EntityManager::create_entity_collision_area(projectile) {
+                    if projectile.is_player_owned() {
+                        for enemy in &mut self.enemies {
+                            if EntityManager::is_col_area_entity_collision(&projectile_col_area, enemy) {
+                                    println!("PROJECTILE COLLISION");
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
-    fn resolve_player_enemy_collision(player_col_area: &bounding_volume::AABB<Point<f32, nalgebra::U2>>, enemy: &Box<Entity>) {
-        if let Some(enemy_col_area) = EntityManager::create_entity_collision_area(&(*(*enemy))) {
-            if player_col_area.intersects(&enemy_col_area) {
-                println!("COLLISION");
+    fn is_col_area_entity_collision(col_area: &bounding_volume::AABB<Point<f32, nalgebra::U2>>, entity: &Box<Entity>) -> bool {
+        if let Some(entity_col_area) = EntityManager::create_entity_collision_area(&(*(*entity))) {
+            if col_area.intersects(&entity_col_area) {
+                return true;
             }
         }
+        false
     }
 
     pub fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32, camera: &Camera) {
-        self.player.draw(asset_manager, ctx, interpolation_value, camera);
+        for projectile in self.projectiles.iter(){
+            projectile.draw(asset_manager, ctx, interpolation_value, camera);
+        }
         for enemy in &self.enemies {
             enemy.draw(asset_manager, ctx, interpolation_value, camera);
+        }
+        self.player.draw(asset_manager, ctx, interpolation_value, camera);
+    }
+
+    pub fn player_fire(&mut self) {
+        if let Some(player_body) = self.player.get_body() {
+            self.projectiles.push(
+                Projectile::new(player_body.pos.x, player_body.pos.y, true)
+            );
         }
     }
 

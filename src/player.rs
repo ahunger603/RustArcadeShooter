@@ -92,11 +92,7 @@ impl Entity for Player {
     }
 
     fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32, camera: &Camera) {
-        graphics::draw_ex(
-            ctx,
-            &asset_manager.player,
-            self.get_draw_param(interpolation_value, camera)
-        ).unwrap();
+        asset_manager.draw_asset("player".to_string(), ctx, self.get_draw_param(interpolation_value, camera));
     }
 
     fn get_body(&self) -> Option<Body> {

@@ -58,11 +58,7 @@ impl Entity for Projectile {
     }
 
     fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32, camera: &Camera) {
-        graphics::draw_ex(
-            ctx,
-            &asset_manager.projectile1,
-            self.get_draw_param(interpolation_value, camera)
-        ).unwrap();
+        asset_manager.draw_asset("projectile1".to_string(), ctx, self.get_draw_param(interpolation_value, camera));
     }
 
     fn get_body(&self) -> Option<Body> {

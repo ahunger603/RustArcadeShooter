@@ -7,14 +7,14 @@ use ncollide::bounding_volume::BoundingVolume;
 use super::asset_manager::*;
 use super::entity::*;
 use super::player::*;
-use super::drone::*;
+use super::enemy::*;
 use super::camera::*;
 use super::projectile::*;
 
 pub struct EntityManager {
     player: Player,
     projectiles: Vec<Projectile>,
-    enemies: Vec<Box<Entity>>
+    enemies: Vec<Enemy>
 }
 
 impl EntityManager {
@@ -22,7 +22,7 @@ impl EntityManager {
         EntityManager {
             player: Player::new(),
             projectiles: vec![],
-            enemies: vec![Box::new(Drone::new(500.0, 300.0))]
+            enemies: vec![Enemy::new_drone(500.0, 300.0)]
         }
     }
 
@@ -80,8 +80,8 @@ impl EntityManager {
         }
     }
 
-    fn is_col_area_entity_collision(col_area: &bounding_volume::AABB<Point<f32, nalgebra::U2>>, entity: &Box<Entity>) -> bool {
-        if let Some(entity_col_area) = EntityManager::create_entity_collision_area(&(*(*entity))) {
+    fn is_col_area_entity_collision(col_area: &bounding_volume::AABB<Point<f32, nalgebra::U2>>, entity: &Enemy) -> bool {
+        if let Some(entity_col_area) = EntityManager::create_entity_collision_area(entity) {
             if col_area.intersects(&entity_col_area) {
                 return true;
             }

@@ -7,15 +7,19 @@ use super::body::*;
 use super::asset_manager::*;
 use super::camera::*;
 
-pub struct Drone {
+pub struct Enemy {
     body: Body
 }
 
-impl Drone {
-    pub fn new(x: f32, y: f32) -> Drone {
-        Drone {
+impl Enemy {
+    fn new(x: f32, y: f32) -> Enemy {
+        Enemy {
             body: Body::new(x, y, 132.0, 128.0, 0.5, 0.5, (f32::consts::PI*3.0)/2.0, true)
         }
+    }
+
+    pub fn new_drone(x:f32, y: f32) -> Enemy {
+        Enemy::new(x, y)
     }
 
     fn get_draw_param(&self, interpolation_value: f32, camera: &Camera) -> graphics::DrawParam  {
@@ -36,7 +40,7 @@ impl Drone {
     }
 }
 
-impl Entity for Drone {
+impl Entity for Enemy {
     fn update(&mut self) {
         
     }

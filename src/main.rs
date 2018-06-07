@@ -13,7 +13,7 @@ mod entity;
 mod entity_manager;
 mod asset_manager;
 mod player;
-mod drone;
+mod enemy;
 mod camera;
 mod projectile;
 

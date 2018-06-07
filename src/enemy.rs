@@ -8,6 +8,7 @@ use super::asset_manager::*;
 use super::camera::*;
 
 pub struct Enemy {
+    is_dead: bool,
     asset_key: String,
     body: Body
 }
@@ -15,6 +16,7 @@ pub struct Enemy {
 impl Enemy {
     fn new(x: f32, y: f32, asset_key: String) -> Enemy {
         Enemy {
+            is_dead: false,
             asset_key,
             body: Body::new(x, y, 132.0, 128.0, 0.5, 0.5, (f32::consts::PI*3.0)/2.0, true)
         }
@@ -39,6 +41,14 @@ impl Enemy {
             offset: Point2::new(0.5, 0.5),
             .. Default::default()
         }
+    }
+
+    pub fn is_dead(&self) -> bool {
+        self.is_dead
+    }
+
+    pub fn set_death(&mut self) {
+        self.is_dead = true;
     }
 }
 

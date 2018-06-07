@@ -67,7 +67,7 @@ impl EntityManager {
                     if projectile.is_player_owned() {
                         for enemy in &mut self.enemies {
                             if EntityManager::is_col_area_entity_collision(&projectile_col_area, enemy) {
-                                    println!("PROJECTILE COLLISION");
+                                    enemy.set_death(); //Projectile Collision
                             }
                         }
                     } else {
@@ -78,6 +78,22 @@ impl EntityManager {
                 }
             }
         }
+        self.collision_clean_up();
+    }
+
+    fn collision_clean_up(&mut self) {
+        let mut new_enemy_list: Vec<Enemy> = vec![];
+        while self.enemies.len() > 0 {
+            if let Some(enemy) = self.enemies.pop() {
+                if !enemy.is_dead() {
+                    new_enemy_list.push(enemy);
+                }
+            }
+            else {
+                break;
+            }
+        }
+        self.enemies = new_enemy_list;
     }
 
     fn is_col_area_entity_collision(col_area: &bounding_volume::AABB<Point<f32, nalgebra::U2>>, entity: &Enemy) -> bool {

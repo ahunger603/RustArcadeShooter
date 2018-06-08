@@ -19,7 +19,7 @@ pub struct GameState {
 }
 
 impl GameState {
-    pub fn new(mut ctx: &mut Context, window_w: u32, window_h: u32) -> GameResult<GameState> {
+    pub fn new(ctx: &mut Context, window_w: u32, window_h: u32) -> GameResult<GameState> {
         if let Ok(asset_manager) = AssetManager::new(ctx) {
             return Ok(GameState {
                 last_update: Instant::now(),

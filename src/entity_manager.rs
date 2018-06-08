@@ -14,7 +14,8 @@ use super::projectile::*;
 pub struct EntityManager {
     player: Player,
     projectiles: Vec<Projectile>,
-    enemies: Vec<Enemy>
+    enemies: Vec<Enemy>,
+    partical: Vec<Box<Entity>>
 }
 
 impl EntityManager {
@@ -22,7 +23,8 @@ impl EntityManager {
         EntityManager {
             player: Player::new(),
             projectiles: vec![],
-            enemies: vec![Enemy::new_drone(500.0, 300.0)]
+            enemies: vec![Enemy::new_drone(500.0, 300.0)],
+            partical: vec![]
         }
     }
 

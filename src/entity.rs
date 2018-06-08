@@ -8,4 +8,6 @@ pub trait Entity {
     fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32, camera: &Camera);
     fn get_body(&self) -> Option<Body>;
     fn set_body(&mut self, body: Body);
+    fn set_dead(&mut self);
+    fn is_dead(&self) -> bool;
 }

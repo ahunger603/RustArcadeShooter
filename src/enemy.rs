@@ -42,14 +42,6 @@ impl Enemy {
             .. Default::default()
         }
     }
-
-    pub fn is_dead(&self) -> bool {
-        self.is_dead
-    }
-
-    pub fn set_death(&mut self) {
-        self.is_dead = true;
-    }
 }
 
 impl Entity for Enemy {
@@ -67,5 +59,13 @@ impl Entity for Enemy {
 
     fn set_body(&mut self, body: Body) {
         self.body = body;
+    }
+
+    fn is_dead(&self) -> bool {
+        self.is_dead
+    }
+
+    fn set_dead(&mut self) {
+        self.is_dead = true;
     }
 }

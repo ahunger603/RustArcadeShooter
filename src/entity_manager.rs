@@ -10,12 +10,13 @@ use super::player::*;
 use super::enemy::*;
 use super::camera::*;
 use super::projectile::*;
+use super::particals::*;
 
 pub struct EntityManager {
     player: Player,
     projectiles: Vec<Projectile>,
     enemies: Vec<Enemy>,
-    partical: Vec<Box<Entity>>
+    particals: Vec<Partical>
 }
 
 impl EntityManager {
@@ -24,7 +25,7 @@ impl EntityManager {
             player: Player::new(),
             projectiles: vec![],
             enemies: vec![Enemy::new_drone(500.0, 300.0)],
-            partical: vec![]
+            particals: vec![]
         }
     }
 
@@ -36,7 +37,11 @@ impl EntityManager {
         for projectile in self.projectiles.iter_mut(){
             projectile.update();
         } 
+        for partical in self.particals.iter_mut(){
+            partical.update();
+        } 
         self.collision_resolution();
+        self.update_clean_up();
     }
 
     fn create_entity_collision_area(entity: &Entity) -> Option<bounding_volume::AABB<Point<f32, nalgebra::U2>>> {
@@ -56,6 +61,14 @@ impl EntityManager {
         None
     }
 
+    fn enemy_hit(enemy: &mut Enemy, projectile: &mut Projectile, particals: &mut Vec<Partical>) {
+        enemy.set_dead();
+        projectile.set_dead(); 
+        if let Some(body) = enemy.get_body() {
+            particals.push(Partical::new_drone_death(body.pos.x + (body.size.x / 1.5), body.pos.y));
+        }
+    }
+
     fn collision_resolution(&mut self) {
         if let Some(player_col_area) = EntityManager::create_entity_collision_area(&self.player) {
             for enemy in &mut self.enemies {
@@ -64,12 +77,12 @@ impl EntityManager {
                 }
             }
 
-            for projectile in self.projectiles.iter(){
+            for projectile in self.projectiles.iter_mut(){
                 if let Some(projectile_col_area) = EntityManager::create_entity_collision_area(projectile) {
                     if projectile.is_player_owned() {
                         for enemy in &mut self.enemies {
                             if EntityManager::is_col_area_entity_collision(&projectile_col_area, enemy) {
-                                    enemy.set_death(); //Projectile Collision
+                                  EntityManager::enemy_hit(enemy, projectile, &mut self.particals); 
                             }
                         }
                     } else {
@@ -80,10 +93,9 @@ impl EntityManager {
                 }
             }
         }
-        self.collision_clean_up();
     }
 
-    fn collision_clean_up(&mut self) {
+    fn clean_up_enemies(&mut self) {
         let mut new_enemy_list: Vec<Enemy> = vec![];
         while self.enemies.len() > 0 {
             if let Some(enemy) = self.enemies.pop() {
@@ -96,6 +108,42 @@ impl EntityManager {
             }
         }
         self.enemies = new_enemy_list;
+    }
+
+    fn clean_up_particals(&mut self) {
+        let mut new_partical_list: Vec<Partical> = vec![];
+        while self.particals.len() > 0 {
+            if let Some(partical) = self.particals.pop() {
+                if !partical.is_dead() {
+                    new_partical_list.push(partical);
+                }
+            }
+            else {
+                break;
+            }
+        }
+        self.particals = new_partical_list;
+    }
+
+    fn clean_up_projectiles(&mut self) {
+        let mut new_projectile_list: Vec<Projectile> = vec![];
+        while self.projectiles.len() > 0 {
+            if let Some(projectile) = self.projectiles.pop() {
+                if !projectile.is_dead() {
+                    new_projectile_list.push(projectile);
+                }
+            }
+            else {
+                break;
+            }
+        }
+        self.projectiles = new_projectile_list;
+    }
+
+    fn update_clean_up(&mut self) {
+        self.clean_up_enemies();
+        self.clean_up_particals();
+        self.clean_up_projectiles();
     }
 
     fn is_col_area_entity_collision(col_area: &bounding_volume::AABB<Point<f32, nalgebra::U2>>, entity: &Enemy) -> bool {
@@ -115,6 +163,10 @@ impl EntityManager {
             enemy.draw(asset_manager, ctx, interpolation_value, camera);
         }
         self.player.draw(asset_manager, ctx, interpolation_value, camera);
+
+        for partical in &self.particals {
+            partical.draw(asset_manager, ctx, interpolation_value, camera);
+        }
     }
 
     pub fn player_fire(&mut self) {

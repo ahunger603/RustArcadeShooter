@@ -102,4 +102,10 @@ impl Entity for Player {
     fn set_body(&mut self, body: Body) {
         self.body = body;
     }
+
+    fn is_dead(&self) -> bool {
+        false
+    }
+
+    fn set_dead(&mut self) {}
 }

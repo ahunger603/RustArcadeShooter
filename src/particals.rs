@@ -8,20 +8,28 @@ use super::asset_manager::*;
 use super::camera::*;
 
 pub struct Partical {
+    is_dead: bool,
     asset_key: String,
+    sheet_w: u32,
+    sheet_h: u32,
+    animation_progress: u32,
     body: Body
 }
 
 impl Partical {
-    fn new(x: f32, y: f32, asset_key: String) -> Partical {
+    fn new(x: f32, y: f32, scale_x: f32, scale_y: f32, rotation: f32, asset_key: String, sheet_w: u32, sheet_h: u32,) -> Partical {
         Partical {
+            is_dead: false,
             asset_key,
-            body: Body::new(x, y, 132.0, 128.0, 0.5, 0.5, (f32::consts::PI*3.0)/2.0, false)
+            sheet_w,
+            sheet_h,
+            animation_progress: 0,
+            body: Body::new(x, y, 0.0, 0.0, scale_x, scale_y, rotation, false)
         }
     }
 
     pub fn new_drone_death(x:f32, y: f32) -> Partical {
-        Partical::new(x, y, "player".to_string())
+        Partical::new(x, y, 1.5, 1.5, f32::consts::PI/2.0, "explosion1".to_string(), 8, 8)
     }
 
     fn get_draw_param(&self, interpolation_value: f32, camera: &Camera) -> graphics::DrawParam  {
@@ -33,6 +41,12 @@ impl Partical {
             )
         );
         graphics::DrawParam {
+            src: graphics::Rect {
+                x: (self.animation_progress % self.sheet_w) as f32 / self.sheet_w as f32,
+                y: (self.animation_progress / self.sheet_w) as f32 / self.sheet_h as f32,
+                w: 1.0/self.sheet_w as f32,
+                h: 1.0/self.sheet_h as f32
+            },
             dest: Point2::new(view_position.x, view_position.y),
             rotation: body.rotation,
             scale: Point2::new(body.scale.x, body.scale.y),
@@ -44,7 +58,12 @@ impl Partical {
 
 impl Entity for Partical {
     fn update(&mut self) {
-        
+        if self.animation_progress == (self.sheet_w * self.sheet_h) {
+            self.set_dead();
+        }
+        else {
+            self.animation_progress += 1;
+        }
     }
 
     fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32, camera: &Camera) {
@@ -57,5 +76,13 @@ impl Entity for Partical {
 
     fn set_body(&mut self, body: Body) {
         self.body = body;
+    }
+
+    fn is_dead(&self) -> bool {
+        self.is_dead
+    }
+
+    fn set_dead(&mut self) {
+        self.is_dead = true;
     }
 }

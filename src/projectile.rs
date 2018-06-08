@@ -8,6 +8,7 @@ use super::asset_manager::*;
 use super::camera::*;
 
 pub struct Projectile {
+    is_dead: bool,
     body: Body,
     player_owned: bool
 }
@@ -23,6 +24,7 @@ impl Projectile {
         body.velocity = Vector2::new(15.0, 0.0);
 
         Projectile {
+            is_dead: false,
             body,
             player_owned
         }
@@ -67,5 +69,13 @@ impl Entity for Projectile {
 
     fn set_body(&mut self, body: Body) {
         self.body = body;
+    }
+
+    fn is_dead(&self) -> bool {
+        self.is_dead
+    }
+
+    fn set_dead(&mut self) {
+        self.is_dead = true;
     }
 }

@@ -9,6 +9,7 @@ use super::camera::*;
 
 
 pub struct Player {
+    is_dead: bool,
     movement_speed: f32,
     move_dir: [bool; 4], //up, down, left, right
     body: Body
@@ -17,6 +18,7 @@ pub struct Player {
 impl Player {
     pub fn new() -> Player {
         Player {
+            is_dead: false,
             movement_speed: 8.0,
             move_dir: [false; 4],
             body: Body::new(300.0, 300.0, 136.0, 96.0, 0.75, 0.75, f32::consts::PI/2.0, true)
@@ -85,14 +87,18 @@ impl Player {
 
 impl Entity for Player {
     fn update(&mut self) {
-        self.body.velocity = self.get_movement_velocity();
-        let movement_vector = self.body.get_movement_vector();
-        self.body.pos.x += movement_vector[0];
-        self.body.pos.y += movement_vector[1];
+        if !self.is_dead {
+            self.body.velocity = self.get_movement_velocity();
+            let movement_vector = self.body.get_movement_vector();
+            self.body.pos.x += movement_vector[0];
+            self.body.pos.y += movement_vector[1];
+        }
     }
 
     fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32, camera: &Camera) {
-        asset_manager.draw_asset("player".to_string(), ctx, self.get_draw_param(interpolation_value, camera));
+        if !self.is_dead {
+            asset_manager.draw_asset("player".to_string(), ctx, self.get_draw_param(interpolation_value, camera));
+        }
     }
 
     fn get_body(&self) -> Option<Body> {
@@ -104,8 +110,10 @@ impl Entity for Player {
     }
 
     fn is_dead(&self) -> bool {
-        false
+        self.is_dead
     }
 
-    fn set_dead(&mut self) {}
+    fn set_dead(&mut self) {
+        self.is_dead = true;
+    }
 }

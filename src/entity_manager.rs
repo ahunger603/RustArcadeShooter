@@ -30,17 +30,23 @@ impl EntityManager {
     }
 
     pub fn update(&mut self) {
-        self.player.update();
-        for enemy in &mut self.enemies {
-            enemy.update();
+        if !self.player.is_dead() {
+            self.player.update();
+            for enemy in &mut self.enemies {
+                enemy.update();
+            }
+            for projectile in self.projectiles.iter_mut(){
+                projectile.update();
+            } 
+            for partical in self.particals.iter_mut(){
+                partical.update();
+            } 
+            self.collision_resolution();
+        } else {
+            for partical in self.particals.iter_mut(){
+                partical.update();
+            } 
         }
-        for projectile in self.projectiles.iter_mut(){
-            projectile.update();
-        } 
-        for partical in self.particals.iter_mut(){
-            partical.update();
-        } 
-        self.collision_resolution();
         self.update_clean_up();
     }
 
@@ -61,10 +67,14 @@ impl EntityManager {
         None
     }
 
-    fn enemy_hit(enemy: &mut Enemy, projectile: &mut Projectile, particals: &mut Vec<Partical>) {
-        enemy.set_dead();
+    fn ship_hit_by_projectile(ship: &mut Entity, projectile: &mut Projectile, particals: &mut Vec<Partical>) {
         projectile.set_dead(); 
-        if let Some(body) = enemy.get_body() {
+        EntityManager::ship_death(ship, particals);
+    }
+
+    fn ship_death(ship: &mut Entity, particals: &mut Vec<Partical>) {
+        ship.set_dead(); 
+        if let Some(body) = ship.get_body() {
             particals.push(Partical::new_drone_death(body.pos.x + (body.size.x / 1.5), body.pos.y));
         }
     }
@@ -73,7 +83,9 @@ impl EntityManager {
         if let Some(player_col_area) = EntityManager::create_entity_collision_area(&self.player) {
             for enemy in &mut self.enemies {
                 if EntityManager::is_col_area_entity_collision(&player_col_area, enemy) {
-                    println!("PLAYER COLLISION");
+                    //Player hit by ship
+                    EntityManager::ship_death(&mut self.player, &mut self.particals);
+                    EntityManager::ship_death(enemy, &mut self.particals);
                 }
             }
 
@@ -82,12 +94,14 @@ impl EntityManager {
                     if projectile.is_player_owned() {
                         for enemy in &mut self.enemies {
                             if EntityManager::is_col_area_entity_collision(&projectile_col_area, enemy) {
-                                  EntityManager::enemy_hit(enemy, projectile, &mut self.particals); 
+                                //Enemy hit by projectile
+                                EntityManager::ship_hit_by_projectile(enemy, projectile, &mut self.particals); 
                             }
                         }
                     } else {
                         if projectile_col_area.intersects(&player_col_area) {
-                            println!("ENEMY PROJECTILE COLLISION");
+                            //Player hit by projectile
+                            EntityManager::ship_hit_by_projectile(&mut self.player, projectile, &mut self.particals);
                         }
                     }
                 }
@@ -95,55 +109,10 @@ impl EntityManager {
         }
     }
 
-    fn clean_up_enemies(&mut self) {
-        let mut new_enemy_list: Vec<Enemy> = vec![];
-        while self.enemies.len() > 0 {
-            if let Some(enemy) = self.enemies.pop() {
-                if !enemy.is_dead() {
-                    new_enemy_list.push(enemy);
-                }
-            }
-            else {
-                break;
-            }
-        }
-        self.enemies = new_enemy_list;
-    }
-
-    fn clean_up_particals(&mut self) {
-        let mut new_partical_list: Vec<Partical> = vec![];
-        while self.particals.len() > 0 {
-            if let Some(partical) = self.particals.pop() {
-                if !partical.is_dead() {
-                    new_partical_list.push(partical);
-                }
-            }
-            else {
-                break;
-            }
-        }
-        self.particals = new_partical_list;
-    }
-
-    fn clean_up_projectiles(&mut self) {
-        let mut new_projectile_list: Vec<Projectile> = vec![];
-        while self.projectiles.len() > 0 {
-            if let Some(projectile) = self.projectiles.pop() {
-                if !projectile.is_dead() {
-                    new_projectile_list.push(projectile);
-                }
-            }
-            else {
-                break;
-            }
-        }
-        self.projectiles = new_projectile_list;
-    }
-
     fn update_clean_up(&mut self) {
-        self.clean_up_enemies();
-        self.clean_up_particals();
-        self.clean_up_projectiles();
+        self.enemies.retain(|enemy| !enemy.is_dead());
+        self.particals.retain(|partical| !partical.is_dead());
+        self.projectiles.retain(|projectile| !projectile.is_dead());
     }
 
     fn is_col_area_entity_collision(col_area: &bounding_volume::AABB<Point<f32, nalgebra::U2>>, entity: &Enemy) -> bool {

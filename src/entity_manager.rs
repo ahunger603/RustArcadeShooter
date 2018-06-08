@@ -29,6 +29,10 @@ impl EntityManager {
         }
     }
 
+    pub fn is_player_alive(&self) -> bool {
+        !self.player.is_dead()
+    }
+
     pub fn update(&mut self) {
         if !self.player.is_dead() {
             self.player.update();

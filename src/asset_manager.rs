@@ -2,6 +2,7 @@ use ggez::{graphics, Context, GameResult};
 
 
 pub struct AssetManager {
+    pub game_over_font: graphics::Font,
     pub player: graphics::Image,
     pub drone1: graphics::Image,
     pub projectile1: graphics::Image,
@@ -11,6 +12,7 @@ pub struct AssetManager {
 impl AssetManager {
     pub fn new(ctx: &mut Context) -> GameResult<AssetManager> {
         Ok(AssetManager {
+            game_over_font: graphics::Font::new(ctx, "/fonts/OpenSans-ExtraBold.ttf", 48).unwrap(),
             player: graphics::Image::new(ctx, "/playerFighter.png").unwrap(),
             drone1: graphics::Image::new(ctx, "/drone1.png").unwrap(),
             projectile1: graphics::Image::new(ctx, "/projectile1.png").unwrap(),

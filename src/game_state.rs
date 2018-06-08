@@ -1,6 +1,7 @@
 use std::time::{Instant, Duration};
 use ggez::*;
 use ggez::event::{Keycode, Mod};
+use nalgebra::{Point2};
 use super::entity_manager::*;
 use super::asset_manager::*;
 use super::camera::*;
@@ -11,6 +12,8 @@ const MAX_FRAMES_PER_SECOND: u32 = 144;
 const MS_PER_FRAME: u64 = ((1.0/MAX_FRAMES_PER_SECOND as f64)*1000.0) as u64;
 
 pub struct GameState {
+    window_w: u32,
+    window_h: u32,
     last_update: Instant,
     last_draw: Instant,
     camera: Camera,
@@ -22,6 +25,8 @@ impl GameState {
     pub fn new(ctx: &mut Context, window_w: u32, window_h: u32) -> GameResult<GameState> {
         if let Ok(asset_manager) = AssetManager::new(ctx) {
             return Ok(GameState {
+                window_w,
+                window_h,
                 last_update: Instant::now(),
                 last_draw: Instant::now(),
                 camera: Camera::new(window_w, window_h),
@@ -30,6 +35,20 @@ impl GameState {
             });
         }
         Err(GameError::UnknownError("Failed to inialize game state! Game exiting..".to_string()))
+    }
+
+    fn draw_game_over_text(&mut self, ctx: &mut Context) {
+        let game_over_text = graphics::Text::new(
+            ctx, "Game Over", &self.asset_manager.game_over_font).unwrap();
+        graphics::draw(
+            ctx,
+            &game_over_text,
+            Point2::new(
+                (self.window_w / 2) as f32 - (game_over_text.width() / 2) as f32,
+                (self.window_h / 2) as f32 - (game_over_text.height() / 2) as f32
+            ),
+            0.0
+        ).unwrap();
     }
 }
 
@@ -54,6 +73,10 @@ impl event::EventHandler for GameState {
 
             let interpolation_value = get_interpolation_value(self);
             self.entity_manager.draw(&self.asset_manager, ctx, interpolation_value, &self.camera);
+
+            if !self.entity_manager.is_player_alive() {
+                self.draw_game_over_text(ctx);
+            }
            
             graphics::present(ctx);
             self.last_draw = Instant::now();

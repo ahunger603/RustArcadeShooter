@@ -25,7 +25,6 @@ const WINDOW_W: u32 = 640;
 const WINDOW_H: u32 = 480;
 
 fn get_context_builder() -> Option<ContextBuilder> {
-    println!("{}",rand::random::<u8>());
     if let Ok(manifest_dir) = env::var("CARGO_MANIFEST_DIR") {
         let mut cb = ContextBuilder::new("RustArcadeShooter", "Infinity")
             .window_setup(conf::WindowSetup::default().title("Rust Arcade Shooter"))

@@ -17,7 +17,7 @@ pub struct Partical {
 }
 
 impl Partical {
-    fn new(x: f32, y: f32, scale_x: f32, scale_y: f32, rotation: f32, asset_key: String, sheet_w: u32, sheet_h: u32,) -> Partical {
+    fn new(x: f32, y: f32, scale_x: f32, scale_y: f32, rotation: f32, asset_key: String, sheet_w: u32, sheet_h: u32) -> Partical {
         Partical {
             is_dead: false,
             asset_key,

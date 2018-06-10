@@ -17,6 +17,7 @@ mod enemy;
 mod camera;
 mod projectile;
 mod particals;
+mod unit;
 
 const WINDOW_W: u32 = 640;
 const WINDOW_H: u32 = 480;

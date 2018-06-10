@@ -6,39 +6,21 @@ use super::entity::*;
 use super::body::*;
 use super::asset_manager::*;
 use super::camera::*;
+use super::unit::*;
 
 
 pub struct Player {
-    is_dead: bool,
     movement_speed: f32,
     move_dir: [bool; 4], //up, down, left, right
-    body: Body
+    unit: Unit
 }
 
 impl Player {
     pub fn new() -> Player {
         Player {
-            is_dead: false,
             movement_speed: 8.0,
             move_dir: [false; 4],
-            body: Body::new(300.0, 300.0, 136.0, 96.0, 0.75, 0.75, f32::consts::PI/2.0, true)
-        }
-    }
-
-    fn get_draw_param(&self, interpolation_value: f32, camera: &Camera) -> graphics::DrawParam  {
-        let body = &self.body;
-        let movement_vector = body.get_movement_vector();
-        let view_position = camera.get_view_position(&Vector2::new(
-                body.pos.x + movement_vector[0]*interpolation_value,
-                body.pos.y + movement_vector[1]*interpolation_value
-            )
-        );
-        graphics::DrawParam {
-            dest: Point2::new(view_position.x, view_position.y),
-            rotation: body.rotation,
-            scale: Point2::new(body.scale.x, body.scale.y),
-            offset: Point2::new(0.5, 0.5),
-            .. Default::default()
+            unit: Unit::new(300.0, 300.0, 136.0, 96.0, 0.75, 0.75, true, f32::consts::PI/2.0, "player".to_string(), 1, 1, true)
         }
     }
 
@@ -87,33 +69,28 @@ impl Player {
 
 impl Entity for Player {
     fn update(&mut self) {
-        if !self.is_dead {
-            self.body.velocity = self.get_movement_velocity();
-            let movement_vector = self.body.get_movement_vector();
-            self.body.pos.x += movement_vector[0];
-            self.body.pos.y += movement_vector[1];
-        }
+        let movement_velocity = self.get_movement_velocity();
+        self.unit.set_velocity(movement_velocity);
+        self.unit.update();
     }
 
     fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32, camera: &Camera) {
-        if !self.is_dead {
-            asset_manager.draw_asset("player".to_string(), ctx, self.get_draw_param(interpolation_value, camera));
-        }
+        self.unit.draw(asset_manager, ctx, interpolation_value, camera);
     }
 
     fn get_body(&self) -> Option<Body> {
-        Some(self.body.clone())
+        self.unit.get_body()
     }
 
     fn set_body(&mut self, body: Body) {
-        self.body = body;
+        self.unit.set_body(body)
     }
 
     fn is_dead(&self) -> bool {
-        self.is_dead
+        self.unit.is_dead
     }
 
     fn set_dead(&mut self) {
-        self.is_dead = true;
+        self.unit.set_dead()
     }
 }

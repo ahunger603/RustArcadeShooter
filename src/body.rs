@@ -1,4 +1,6 @@
 use nalgebra::Vector2;
+use ggez::graphics::*;
+use super::camera::*;
 
 pub struct Body {
     pub pos: Vector2<f32>, //x, y
@@ -34,6 +36,32 @@ impl Body {
             self.velocity[1].cos()*self.velocity[0],
             self.velocity[1].sin()*self.velocity[0]
         )
+    }
+
+    pub fn get_view_position(&self, interpolation_value: f32, camera: &Camera) -> Vector2<f32> {
+        let movement_vector = self.get_movement_vector();
+        camera.get_view_position(&Vector2::new(
+                self.pos.x + movement_vector[0]*interpolation_value,
+                self.pos.y + movement_vector[1]*interpolation_value
+            )
+        )
+    }
+
+    pub fn get_default_draw_param(&self, interpolation_value: f32, camera: &Camera) -> DrawParam {
+        let view_position = self.get_view_position(interpolation_value, camera);
+        DrawParam {
+            dest: Point2::new(view_position.x, view_position.y),
+            rotation: self.rotation,
+            scale: Point2::new(self.scale.x, self.scale.y),
+            offset: Point2::new(0.5, 0.5),
+            .. Default::default()
+        }
+    }
+
+    pub fn update_pos(&mut self) {
+        let movement_vector = self.get_movement_vector();
+        self.pos.x += movement_vector[0];
+        self.pos.y += movement_vector[1];
     }
 
     pub fn get_scaled_size(&self) -> Vector2<f32> {

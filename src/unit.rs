@@ -18,19 +18,7 @@ pub struct Unit {
 }
 
 impl Unit {
-    pub fn new(
-            x: f32, 
-            y: f32,
-            w: f32,
-            h: f32,
-            scale_x: f32,
-            scale_y: f32,
-            collidable: bool,
-            rotation: f32,
-            asset_key: String,
-            sheet_w: u32,
-            sheet_h: u32,
-            animation_repeats: bool) -> Unit {
+    pub fn new(body: Body, asset_key: String, sheet_w: u32, sheet_h: u32, animation_repeats: bool) -> Unit {
         Unit {
             is_dead: false,
             asset_key,
@@ -38,7 +26,7 @@ impl Unit {
             sheet_h,
             animation_repeats,
             animation_progress: 0,
-            body: Body::new(x, y, w, h, scale_x, scale_y, rotation, false)
+            body
         }
     }
 

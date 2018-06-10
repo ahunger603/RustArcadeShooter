@@ -20,7 +20,10 @@ impl Player {
         Player {
             movement_speed: 8.0,
             move_dir: [false; 4],
-            unit: Unit::new(300.0, 300.0, 136.0, 96.0, 0.75, 0.75, true, f32::consts::PI/2.0, "player".to_string(), 1, 1, true)
+            unit: Unit::new(
+                Body::new(300.0, 300.0, 136.0, 96.0, 0.75, 0.75, f32::consts::PI/2.0, true),
+                "player".to_string(), 1, 1, true
+            )
         }
     }
 

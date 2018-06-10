@@ -6,14 +6,13 @@ use super::entity::*;
 use super::body::*;
 use super::asset_manager::*;
 use super::camera::*;
+use super::unit::*;
 
 const ENEMY_DIRECTION: f32 = f32::consts::PI;
 const MOVE_SPEED_NORMAL: f32 = 5.0;
 
 pub struct Enemy {
-    is_dead: bool,
-    asset_key: String,
-    body: Body
+    unit: Unit
 }
 
 impl Enemy {
@@ -21,9 +20,7 @@ impl Enemy {
         let mut body = Body::new(x, y, 132.0, 128.0, 0.5, 0.5, (f32::consts::PI*3.0)/2.0, true);
         body.velocity = Vector2::new(move_speed, ENEMY_DIRECTION);
         Enemy {
-            is_dead: false,
-            asset_key,
-            body
+            unit: Unit::new(body, asset_key, 1, 1, true)
         }
     }
 
@@ -34,26 +31,26 @@ impl Enemy {
 
 impl Entity for Enemy {
     fn update(&mut self) {
-        self.body.update_pos();
+        self.unit.update();
     }
 
     fn draw(&self, asset_manager: &AssetManager, ctx: &mut Context, interpolation_value: f32, camera: &Camera) {
-        asset_manager.draw_asset(self.asset_key.clone(), ctx, self.body.get_default_draw_param(interpolation_value, camera));
+        self.unit.draw(asset_manager, ctx, interpolation_value, camera);
     }
 
     fn get_body(&self) -> Option<Body> {
-        Some(self.body.clone())
+        self.unit.get_body()
     }
 
     fn set_body(&mut self, body: Body) {
-        self.body = body;
+        self.unit.set_body(body)
     }
 
     fn is_dead(&self) -> bool {
-        self.is_dead
+        self.unit.is_dead
     }
 
     fn set_dead(&mut self) {
-        self.is_dead = true;
+        self.unit.set_dead()
     }
 }

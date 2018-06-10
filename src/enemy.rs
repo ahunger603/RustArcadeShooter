@@ -1,7 +1,6 @@
 use std::f32;
 use ggez::*;
 use nalgebra::Vector2;
-use nalgebra::Point2;
 use super::entity::*;
 use super::body::*;
 use super::asset_manager::*;
@@ -12,7 +11,7 @@ const ENEMY_DIRECTION: f32 = f32::consts::PI;
 const MOVE_SPEED_NORMAL: f32 = 5.0;
 
 pub enum EnemyType {
-    NORMAL_DRONE
+    NormalDrone
 }
 
 pub struct Enemy {
@@ -34,7 +33,7 @@ impl Enemy {
 
     pub fn create_enemy_by_key(enemy_type: EnemyType, x:f32, y: f32) -> Option<Enemy> {
         match enemy_type {
-            NORMAL_DRONE => Some(Enemy::new_drone(x, y)),
+            EnemyType::NormalDrone => Some(Enemy::new_drone(x, y)),
             _ => None
         }
     }

@@ -61,21 +61,21 @@ impl WaveManager {
             spawn_rate: 1,
             spawn_delay_ms: 1000,
             remaining_enemies: vec![
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE,
-                EnemyType::NORMAL_DRONE
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone,
+                EnemyType::NormalDrone
             ]
         }
     }

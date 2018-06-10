@@ -1,7 +1,6 @@
 use std::f32;
 use ggez::*;
 use nalgebra::Vector2;
-use nalgebra::Point2;
 use super::entity::*;
 use super::body::*;
 use super::asset_manager::*;

@@ -32,7 +32,7 @@ impl GameState {
                 player_paused: false,
                 game_started: false,
                 entity_manager: EntityManager::new(),
-                wave_manager: WaveManager::new(),
+                wave_manager: WaveManager::new(window_w, window_h),
                 asset_manager
             });
         }

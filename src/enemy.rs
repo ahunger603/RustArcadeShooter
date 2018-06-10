@@ -11,6 +11,10 @@ use super::unit::*;
 const ENEMY_DIRECTION: f32 = f32::consts::PI;
 const MOVE_SPEED_NORMAL: f32 = 5.0;
 
+pub enum EnemyType {
+    NORMAL_DRONE
+}
+
 pub struct Enemy {
     unit: Unit
 }
@@ -26,6 +30,13 @@ impl Enemy {
 
     pub fn new_drone(x:f32, y: f32) -> Enemy {
         Enemy::new(x, y, "drone1".to_string(), MOVE_SPEED_NORMAL)
+    }
+
+    pub fn create_enemy_by_key(enemy_type: EnemyType, x:f32, y: f32) -> Option<Enemy> {
+        match enemy_type {
+            NORMAL_DRONE => Some(Enemy::new_drone(x, y)),
+            _ => None
+        }
     }
 }
 

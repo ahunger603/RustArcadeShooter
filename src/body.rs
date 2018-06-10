@@ -47,17 +47,6 @@ impl Body {
         )
     }
 
-    pub fn get_default_draw_param(&self, interpolation_value: f32, camera: &Camera) -> DrawParam {
-        let view_position = self.get_view_position(interpolation_value, camera);
-        DrawParam {
-            dest: Point2::new(view_position.x, view_position.y),
-            rotation: self.rotation,
-            scale: Point2::new(self.scale.x, self.scale.y),
-            offset: Point2::new(0.5, 0.5),
-            .. Default::default()
-        }
-    }
-
     pub fn update_pos(&mut self) {
         let movement_vector = self.get_movement_vector();
         self.pos.x += movement_vector[0];

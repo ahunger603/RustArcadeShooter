@@ -1,7 +1,10 @@
 use ggez::{graphics, Context, GameResult};
+use nalgebra::{Point2};
 
 
 pub struct AssetManager {
+    window_w: u32,
+    window_h: u32,
     pub game_over_font: graphics::Font,
     pub player: graphics::Image,
     pub drone1: graphics::Image,
@@ -10,8 +13,10 @@ pub struct AssetManager {
 }
 
 impl AssetManager {
-    pub fn new(ctx: &mut Context) -> GameResult<AssetManager> {
+    pub fn new(ctx: &mut Context, window_w: u32, window_h: u32) -> GameResult<AssetManager> {
         Ok(AssetManager {
+            window_w,
+            window_h,
             game_over_font: graphics::Font::new(ctx, "/fonts/OpenSans-ExtraBold.ttf", 48).unwrap(),
             player: graphics::Image::new(ctx, "/playerFighter.png").unwrap(),
             drone1: graphics::Image::new(ctx, "/drone1.png").unwrap(),
@@ -35,6 +40,18 @@ impl AssetManager {
             ctx,
             self.get_asset(asset_key),
             draw_param
+        ).unwrap();
+    }
+
+    pub fn draw_centered_text(&self, ctx: &mut Context, text: graphics::Text) {
+        graphics::draw(
+            ctx,
+            &text,
+            Point2::new(
+                (self.window_w / 2) as f32 - (text.width() / 2) as f32,
+                (self.window_h / 2) as f32 - (text.height() / 2) as f32
+            ),
+            0.0
         ).unwrap();
     }
 

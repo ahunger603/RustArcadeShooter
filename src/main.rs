@@ -18,6 +18,7 @@ mod camera;
 mod projectile;
 mod particals;
 mod unit;
+mod wave_manager;
 
 const WINDOW_W: u32 = 640;
 const WINDOW_H: u32 = 480;

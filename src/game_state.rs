@@ -1,8 +1,8 @@
 use std::time::{Instant, Duration};
 use ggez::*;
 use ggez::event::{Keycode, Mod};
-use nalgebra::{Point2};
 use super::entity_manager::*;
+use super::wave_manager::*;
 use super::asset_manager::*;
 use super::camera::*;
 
@@ -12,54 +12,69 @@ const MAX_FRAMES_PER_SECOND: u32 = 144;
 const MS_PER_FRAME: u64 = ((1.0/MAX_FRAMES_PER_SECOND as f64)*1000.0) as u64;
 
 pub struct GameState {
-    window_w: u32,
-    window_h: u32,
     last_update: Instant,
     last_draw: Instant,
     camera: Camera,
+    player_paused: bool,
+    game_started: bool,
     entity_manager: EntityManager,
+    wave_manager: WaveManager,
     asset_manager: AssetManager
 }
 
 impl GameState {
     pub fn new(ctx: &mut Context, window_w: u32, window_h: u32) -> GameResult<GameState> {
-        if let Ok(asset_manager) = AssetManager::new(ctx) {
+        if let Ok(asset_manager) = AssetManager::new(ctx, window_w, window_h) {
             return Ok(GameState {
-                window_w,
-                window_h,
                 last_update: Instant::now(),
                 last_draw: Instant::now(),
                 camera: Camera::new(window_w, window_h),
+                player_paused: false,
+                game_started: false,
                 entity_manager: EntityManager::new(),
+                wave_manager: WaveManager::new(),
                 asset_manager
             });
         }
         Err(GameError::UnknownError("Failed to inialize game state! Game exiting..".to_string()))
     }
 
-    fn draw_game_over_text(&mut self, ctx: &mut Context) {
-        let game_over_text = graphics::Text::new(
-            ctx, "Game Over", &self.asset_manager.game_over_font).unwrap();
-        graphics::draw(
-            ctx,
-            &game_over_text,
-            Point2::new(
-                (self.window_w / 2) as f32 - (game_over_text.width() / 2) as f32,
-                (self.window_h / 2) as f32 - (game_over_text.height() / 2) as f32
-            ),
-            0.0
-        ).unwrap();
+    fn update_game(&mut self) {
+        if !self.get_game_paused() {
+            self.entity_manager.update();
+            self.wave_manager.update(&mut self.entity_manager);
+        }
     }
-}
 
-fn get_interpolation_value(game_state: &GameState) -> f32 {
-    (game_state.last_update.elapsed().subsec_nanos() as f32 / 1_000_000.0 ) / (MS_PER_UPDATE as f32)
+    fn draw_game(&self, ctx: &mut Context, interpolation_value: f32) {
+        self.entity_manager.draw(&self.asset_manager, ctx, interpolation_value, &self.camera);
+        if !self.entity_manager.is_player_alive() {
+            self.draw_game_over_text(ctx);
+        }
+    }
+
+    fn draw_game_over_text(&self, ctx: &mut Context) {
+        let game_over_text = graphics::Text::new(ctx, "Game Over", &self.asset_manager.game_over_font).unwrap();
+        self.asset_manager.draw_centered_text(
+            ctx, game_over_text
+        );
+    }
+
+    fn get_game_paused(&self) -> bool { !self.game_started || self.player_paused }
+
+    fn get_interpolation_value(&self) -> f32 {
+        if self.get_game_paused() {
+            0.0
+        } else {
+            (self.last_update.elapsed().subsec_nanos() as f32 / 1_000_000.0 ) / (MS_PER_UPDATE as f32)
+        }
+    }
 }
 
 impl event::EventHandler for GameState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult<()> {
         if self.last_update.elapsed() > Duration::from_millis(MS_PER_UPDATE) {
-            self.entity_manager.update();
+            self.update_game();
             self.last_update = Instant::now();
         }
         Ok(())
@@ -71,12 +86,7 @@ impl event::EventHandler for GameState {
             graphics::clear(ctx);
             graphics::set_background_color(ctx, graphics::BLACK);
 
-            let interpolation_value = get_interpolation_value(self);
-            self.entity_manager.draw(&self.asset_manager, ctx, interpolation_value, &self.camera);
-
-            if !self.entity_manager.is_player_alive() {
-                self.draw_game_over_text(ctx);
-            }
+            self.draw_game(ctx, self.get_interpolation_value());
            
             graphics::present(ctx);
             self.last_draw = Instant::now();
@@ -112,11 +122,13 @@ impl event::EventHandler for GameState {
         keymod: Mod,
         repeat: bool
     ) {
+        self.game_started = true;
         match keycode {
             Keycode::W => self.entity_manager.player_move_cancel(0),
             Keycode::S => self.entity_manager.player_move_cancel(1),
             Keycode::D => self.entity_manager.player_move_cancel(2),
             Keycode::A => self.entity_manager.player_move_cancel(3),
+            Keycode::Escape => self.player_paused = !self.player_paused,
             _ => {}
         }
     }

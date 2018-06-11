@@ -44,7 +44,14 @@ impl GameState {
     fn update_game(&mut self) {
         if !self.get_game_paused() {
             self.entity_manager.update();
+            let lost = self.entity_manager.get_lives_lost();
+            if lost > 0 {
+                println!("{}", lost);
+            }
             self.wave_manager.update(&mut self.entity_manager);
+            if self.is_wave_complete() {
+                
+            }
         }
     }
 
@@ -59,6 +66,8 @@ impl GameState {
         } else {
             if !self.entity_manager.is_player_alive() {
                 self.draw_game_over_text(ctx);
+            } else {
+                
             }
         }
     }

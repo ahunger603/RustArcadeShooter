@@ -1,9 +1,7 @@
 use ggez::graphics::{Rect};
-use nalgebra::{Isometry2, Vector2, Point, Point2, Id, U2};
+use nalgebra::{Isometry2, Vector2, Point, U2};
 use ncollide::shape::Cuboid2;
 use ncollide::bounding_volume;
-use ncollide::bounding_volume::BoundingVolume;
-use ncollide::query::PointQuery;
 
 const ENTITY_AREA_BUFFER_SZ: f32 = 100.0;
 
@@ -11,7 +9,8 @@ pub struct PlaySpace {
     pub player_area: Rect,
     pub entity_area: Rect,
     pub player_area_aabb: bounding_volume::AABB<Point<f32, U2>>,
-    pub entity_area_aabb: bounding_volume::AABB<Point<f32, U2>>
+    pub entity_area_aabb: bounding_volume::AABB<Point<f32, U2>>,
+    pub life_loss_area_aabb: bounding_volume::AABB<Point<f32, U2>>
 }
 
 impl PlaySpace {
@@ -32,7 +31,13 @@ impl PlaySpace {
             player_area,
             entity_area,
             player_area_aabb: PlaySpace::create_aabb_from_rect(&player_area),
-            entity_area_aabb: PlaySpace::create_aabb_from_rect(&entity_area)
+            entity_area_aabb: PlaySpace::create_aabb_from_rect(&entity_area),
+            life_loss_area_aabb: PlaySpace::create_aabb_from_rect(&Rect {
+                x: -window_w,
+                y: window_h,
+                w: window_w,
+                h: window_h
+            })
         }
     }
 
@@ -47,7 +52,8 @@ impl Clone for PlaySpace {
             player_area: self.player_area.clone(),
             entity_area: self.entity_area.clone(),
             player_area_aabb: self.player_area_aabb.clone(),
-            entity_area_aabb: self.entity_area_aabb.clone()
+            entity_area_aabb: self.entity_area_aabb.clone(),
+            life_loss_area_aabb: self.life_loss_area_aabb.clone()
         }
     }
 }

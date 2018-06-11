@@ -25,8 +25,8 @@ impl WaveManager {
     pub fn new(play_space: PlaySpace) -> WaveManager {
         WaveManager {
             progress_wave: false,
-            spawn_origin: Vector2::new(play_space.entity_area.w, play_space.entity_area.h / 2.0),
-            spawn_range: play_space.entity_area.h - 100.0,
+            spawn_origin: Vector2::new(play_space.player_area.w + 20.0, play_space.player_area.h / 2.0),
+            spawn_range: play_space.player_area.h - 100.0,
             current_wave_level: 0,
             current_wave: WaveManager::create_wave(0),
             last_spawn: Instant::now()
@@ -35,7 +35,7 @@ impl WaveManager {
 
     pub fn get_random_spawn_point(&self) -> Vector2<f32> {
         let rand_rang: f32 = thread_rng().gen();
-        Vector2::new(self.spawn_origin.x, self.spawn_origin.y + self.spawn_range*(rand_rang - 0.5))
+        Vector2::new(self.spawn_origin.x - 25.0, self.spawn_origin.y + self.spawn_range*(rand_rang - 0.5))
     }
 
     pub fn spawn(&mut self, entity_manager: &mut EntityManager) {
@@ -65,18 +65,6 @@ impl WaveManager {
             spawn_rate: 1,
             spawn_delay_ms: 1000,
             remaining_enemies: vec![
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
                 EnemyType::NormalDrone,
                 EnemyType::NormalDrone,
                 EnemyType::NormalDrone

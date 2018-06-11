@@ -66,6 +66,19 @@ impl EntityManager {
         self.update_clean_up();
     }
 
+    pub fn get_lives_lost(&mut self) -> u32 {
+        let mut lost = 0;
+        for enemy in &mut self.enemies {
+            if let Some(enemy_area) = EntityManager::create_entity_collision_area(enemy) {
+                if self.play_space.life_loss_area_aabb.contains(&enemy_area) {
+                    lost += 1;
+                    enemy.set_dead();
+                }
+            }
+        }
+        lost
+    }
+
     fn create_entity_collision_area(entity: &Entity) -> Option<bounding_volume::AABB<Point<f32, nalgebra::U2>>> {
         let body = entity.get_body();
         if body.collidable {

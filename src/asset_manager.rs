@@ -6,6 +6,7 @@ pub struct AssetManager {
     window_w: u32,
     window_h: u32,
     pub large_splash_font: graphics::Font,
+    pub med_splash_font: graphics::Font,
     pub player: graphics::Image,
     pub drone1: graphics::Image,
     pub projectile1: graphics::Image,
@@ -18,6 +19,7 @@ impl AssetManager {
             window_w,
             window_h,
             large_splash_font: graphics::Font::new(ctx, "/fonts/OpenSans-ExtraBold.ttf", 48).unwrap(),
+            med_splash_font: graphics::Font::new(ctx, "/fonts/OpenSans-Bold.ttf", 24).unwrap(),
             player: graphics::Image::new(ctx, "/playerFighter.png").unwrap(),
             drone1: graphics::Image::new(ctx, "/drone1.png").unwrap(),
             projectile1: graphics::Image::new(ctx, "/projectile1.png").unwrap(),
@@ -50,6 +52,18 @@ impl AssetManager {
             Point2::new(
                 (self.window_w / 2) as f32 - (text.width() / 2) as f32,
                 (self.window_h / 2) as f32 - (text.height() / 2) as f32
+            ),
+            0.0
+        ).unwrap();
+    }
+
+    pub fn draw_bottom_centered_text(&self, ctx: &mut Context, text: graphics::Text) {
+        graphics::draw(
+            ctx,
+            &text,
+            Point2::new(
+                (self.window_w / 2) as f32 - (text.width() / 2) as f32,
+                self.window_h as f32 - (text.height() as f32) - 10.0
             ),
             0.0
         ).unwrap();

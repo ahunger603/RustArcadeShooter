@@ -49,9 +49,6 @@ impl GameState {
         if !self.is_game_paused() && !self.is_game_over() {
             self.entity_manager.update();
             self.wave_manager.update(&mut self.entity_manager);
-            if self.is_wave_complete() {
-                
-            }
             
             self.lives -= self.entity_manager.update_life_lost() as i32;
         }
@@ -69,9 +66,22 @@ impl GameState {
             if self.is_game_over() {
                 self.draw_game_over_text(ctx);
             } else {
-                
+                if self.is_wave_complete() {
+                    self.draw_next_level_text(ctx);
+                }
             }
         }
+    }
+
+    fn draw_next_level_text(&self, ctx: &mut Context) {
+        let start_text = graphics::Text::new(ctx, 
+            format!("Press SPACE to start level {}!",
+            self.wave_manager.get_wave_level() + 1).as_str(),
+            &self.asset_manager.med_splash_font
+        ).unwrap();
+        self.asset_manager.draw_bottom_centered_text(
+            ctx, start_text
+        );
     }
 
     fn draw_game_start_text(&self, ctx: &mut Context) {
@@ -162,7 +172,12 @@ impl event::EventHandler for GameState {
             Keycode::D => self.entity_manager.player_move_cancel(2),
             Keycode::A => self.entity_manager.player_move_cancel(3),
             Keycode::Escape => self.player_paused = !self.player_paused,
-            Keycode::Space => self.game_started = true,
+            Keycode::Space => {
+                self.game_started = true;
+                if self.is_wave_complete() {
+                    self.wave_manager.set_to_progress_level();
+                }
+            },
             _ => {}
         }
     }

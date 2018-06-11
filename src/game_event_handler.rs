@@ -6,7 +6,6 @@ use super::asset_manager::*;
 use super::camera::*;
 use super::wave_manager::*;
 use super::play_space::*;
-use super::entity::*;
 use super::player::*;
 use super::enemy::*;
 use super::projectile::*;
@@ -18,6 +17,7 @@ const MAX_FRAMES_PER_SECOND: u32 = 144;
 const MS_PER_FRAME: u64 = ((1.0/MAX_FRAMES_PER_SECOND as f64)*1000.0) as u64;
 
 const STARTING_LIVES: i32 = 10;
+const RESPAWN_TIME: u64 = 700;
 
 pub struct GameState {
     pub player_paused: bool,
@@ -33,13 +33,15 @@ pub struct GameState {
 
 impl GameState {
     pub fn new(play_space: PlaySpace) -> GameState {
+        let player_spawn_x = play_space.player_area.w / 3.0;
+        let player_spawn_y = play_space.player_area.h / 2.0;
         GameState {
             player_paused: false,
             game_started: false,
             lives: STARTING_LIVES,
             score: 0,
             play_space,
-            player: Player::new(),
+            player: Player::new(player_spawn_x, player_spawn_y),
             projectiles: vec![],
             enemies: vec![],
             particals: vec![]
@@ -74,6 +76,9 @@ impl GameEventHandler {
 
     fn update_game(&mut self) {
         if !self.is_game_paused() && !self.is_game_over() {
+            if !EntityManager::is_player_alive(&self.game_state) && EntityManager::get_player_last_death(&self.game_state).elapsed() > Duration::from_millis(RESPAWN_TIME) {
+                EntityManager::respawn_player(&mut self.game_state)
+            }
             EntityManager::update(&mut self.game_state);
             self.wave_manager.update(&mut self.game_state);
             

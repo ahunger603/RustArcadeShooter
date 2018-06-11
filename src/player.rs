@@ -1,3 +1,4 @@
+use std::time::{Instant, Duration};
 use std::f32;
 use ggez::*;
 use nalgebra::Vector2;
@@ -9,18 +10,20 @@ use super::unit::*;
 
 
 pub struct Player {
+    pub last_death: Instant,
     movement_speed: f32,
     move_dir: [bool; 4], //up, down, left, right
     unit: Unit
 }
 
 impl Player {
-    pub fn new() -> Player {
+    pub fn new(x: f32, y: f32) -> Player {
         Player {
+            last_death: Instant::now(),
             movement_speed: 8.0,
             move_dir: [false; 4],
             unit: Unit::new(
-                Body::new(300.0, 300.0, 136.0, 96.0, 0.75, 0.75, f32::consts::PI/2.0, true),
+                Body::new(x, y, 136.0, 96.0, 0.75, 0.75, f32::consts::PI/2.0, true),
                 "player".to_string(), 1, 1, true
             )
         }
@@ -67,6 +70,10 @@ impl Player {
         }
         self.move_dir[dir as usize] = false;
     }
+
+    pub fn set_alive(&mut self) {
+        self.unit.is_dead = false;
+    }
 }
 
 impl Entity for Player {
@@ -93,6 +100,7 @@ impl Entity for Player {
     }
 
     fn set_dead(&mut self) {
+        self.last_death = Instant::now();
         self.unit.set_dead()
     }
 }

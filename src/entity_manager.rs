@@ -1,4 +1,5 @@
 use ggez::*;
+use std::time::{Instant};
 use nalgebra::{Isometry2, Vector2, Point, Point2, Id};
 use ncollide::shape::Cuboid2;
 use ncollide::bounding_volume;
@@ -20,6 +21,17 @@ pub struct EntityManager;
 impl EntityManager {
     pub fn is_player_alive(game_state: &GameState) -> bool {
         !game_state.player.is_dead()
+    }
+
+    pub fn respawn_player(game_state: &mut GameState) {
+        let mut body = game_state.player.get_body();
+        body.pos = Vector2::new(game_state.play_space.player_area.w / 3.0, game_state.play_space.player_area.h / 2.0);
+        game_state.player.set_body(body);
+        game_state.player.set_alive();
+    }
+
+    pub fn get_player_last_death(game_state: &GameState) -> Instant {
+        game_state.player.last_death
     }
 
     pub fn add_enemy(game_state: &mut GameState, enemy: Enemy) {

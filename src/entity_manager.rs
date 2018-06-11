@@ -86,11 +86,13 @@ impl EntityManager {
 
     fn collision_resolution(game_state: &mut GameState) {
         if let Some(player_col_area) = EntityManager::create_entity_collision_area(&game_state.player) {
-            for enemy in &mut game_state.enemies {
-                if EntityManager::is_col_area_entity_collision(&player_col_area, enemy) {
-                    //Player hit by ship
-                    EntityManager::ship_death(&mut game_state.player, &mut game_state.particals);
-                    EntityManager::ship_death(enemy, &mut game_state.particals);
+            if EntityManager::is_player_alive(game_state) {
+                for enemy in &mut game_state.enemies {
+                    if EntityManager::is_col_area_entity_collision(&player_col_area, enemy) {
+                        //Player hit by ship
+                        EntityManager::ship_death(&mut game_state.player, &mut game_state.particals);
+                        EntityManager::ship_death(enemy, &mut game_state.particals);
+                    }
                 }
             }
 
@@ -159,18 +161,29 @@ impl EntityManager {
     }
 
     pub fn player_fire(game_state: &mut GameState) {
-        let player_body = game_state.player.get_body();
+        if EntityManager::is_player_alive(game_state) {
+            let player_body = game_state.player.get_body();
+            game_state.projectiles.push(
+                Projectile::new(player_body.pos.x, player_body.pos.y, true)
+            );
+        }
+    }
+
+    pub fn enemy_fire(game_state: &mut GameState, x: f32, y: f32) {
         game_state.projectiles.push(
-            Projectile::new(player_body.pos.x, player_body.pos.y, true)
+            Projectile::new(x, y, false)
         );
-        
     }
 
     pub fn player_move(game_state: &mut GameState, dir: u16) {
-        game_state.player.move_dir(dir);
+        if EntityManager::is_player_alive(game_state) {
+            game_state.player.move_dir(dir);
+        }
     }
 
     pub fn player_move_cancel(game_state: &mut GameState, dir: u16) {
-        game_state.player.move_dir_cancel(dir);
+        if EntityManager::is_player_alive(game_state) {
+            game_state.player.move_dir_cancel(dir);
+        }
     }
 }

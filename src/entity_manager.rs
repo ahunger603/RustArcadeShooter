@@ -1,8 +1,9 @@
 use ggez::*;
-use nalgebra::{Isometry2, Vector2, Vector4, Point};
+use nalgebra::{Isometry2, Vector2, Point, Point2, Id};
 use ncollide::shape::Cuboid2;
 use ncollide::bounding_volume;
 use ncollide::bounding_volume::BoundingVolume;
+use ncollide::query::PointQuery;
 
 use super::asset_manager::*;
 use super::entity::*;
@@ -11,19 +12,20 @@ use super::enemy::*;
 use super::camera::*;
 use super::projectile::*;
 use super::particals::*;
+use super::play_space::*;
 
 pub struct EntityManager {
     player: Player,
-    play_area: graphics::Rect,
+    play_space: PlaySpace,
     projectiles: Vec<Projectile>,
     enemies: Vec<Enemy>,
     particals: Vec<Partical>
 }
 
 impl EntityManager {
-    pub fn new(play_area: graphics::Rect) -> EntityManager {
+    pub fn new(play_space: PlaySpace) -> EntityManager {
         EntityManager {
-            play_area,
+            play_space,
             player: Player::new(),
             projectiles: vec![],
             enemies: vec![],
@@ -120,12 +122,24 @@ impl EntityManager {
         }
     }
 
+    fn retain_entity(play_space: &PlaySpace, entity: &Entity) -> bool {
+        if entity.is_dead() {
+            false
+        } else {
+            let body_pos = entity.get_body().pos;
+            if play_space.entity_area_aabb.contains_point(&Id::new(), &Point2::new(body_pos.x, body_pos.y)) {
+                true
+            } else {
+                false
+            }
+        }
+    }
+
     fn update_clean_up(&mut self) {
-        self.enemies.retain(|enemy| {
-            !enemy.is_dead()
-        });
-        self.particals.retain(|partical| !partical.is_dead());
-        self.projectiles.retain(|projectile| !projectile.is_dead());
+        let play_space = self.play_space.clone();
+        self.enemies.retain(|enemy| EntityManager::retain_entity(&play_space, enemy));
+        self.particals.retain(|partical| EntityManager::retain_entity(&play_space, partical));
+        self.projectiles.retain(|projectile| EntityManager::retain_entity(&play_space, projectile));
     }
 
     fn is_col_area_entity_collision(col_area: &bounding_volume::AABB<Point<f32, nalgebra::U2>>, entity: &Enemy) -> bool {

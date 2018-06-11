@@ -5,6 +5,7 @@ use super::entity_manager::*;
 use super::asset_manager::*;
 use super::camera::*;
 use super::wave_manager::*;
+use super::play_space::*;
 
 const MAX_UPDATES_PER_SECOND: u32 = 60;
 const MS_PER_UPDATE: u64 = ((1.0/MAX_UPDATES_PER_SECOND as f64)*1000.0) as u64;
@@ -24,7 +25,7 @@ pub struct GameState {
 
 impl GameState {
     pub fn new(ctx: &mut Context, window_w: u32, window_h: u32) -> GameResult<GameState> {
-        let play_area = graphics::Rect::new(0.0, window_h as f32, window_w as f32, window_h as f32);
+        let play_space = PlaySpace::new(window_w as f32, window_h as f32);
         if let Ok(asset_manager) = AssetManager::new(ctx, window_w, window_h) {
             return Ok(GameState {
                 last_update: Instant::now(),
@@ -32,9 +33,9 @@ impl GameState {
                 camera: Camera::new(window_w, window_h),
                 player_paused: false,
                 game_started: false,
-                entity_manager: EntityManager::new(play_area.clone()),
+                entity_manager: EntityManager::new(play_space.clone()),
                 asset_manager,
-                wave_manager: WaveManager::new(play_area.clone())
+                wave_manager: WaveManager::new(play_space.clone())
             });
         }
         Err(GameError::UnknownError("Failed to inialize game state! Game exiting..".to_string()))

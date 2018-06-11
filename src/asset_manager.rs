@@ -45,28 +45,39 @@ impl AssetManager {
         ).unwrap();
     }
 
+    fn draw_anchored_text(ctx: &mut Context, text: &graphics::Text, anchor: Point2<f32>) {
+        graphics::draw(ctx, text, anchor, 0.0).unwrap();
+    }
+
     pub fn draw_centered_text(&self, ctx: &mut Context, text: graphics::Text) {
-        graphics::draw(
-            ctx,
-            &text,
-            Point2::new(
-                (self.window_w / 2) as f32 - (text.width() / 2) as f32,
-                (self.window_h / 2) as f32 - (text.height() / 2) as f32
-            ),
-            0.0
-        ).unwrap();
+        AssetManager::draw_anchored_text(ctx, &text, Point2::new(
+            (self.window_w / 2) as f32 - (text.width() / 2) as f32,
+            (self.window_h / 2) as f32 - (text.height() / 2) as f32
+        ))
     }
 
     pub fn draw_bottom_centered_text(&self, ctx: &mut Context, text: graphics::Text) {
-        graphics::draw(
-            ctx,
-            &text,
-            Point2::new(
-                (self.window_w / 2) as f32 - (text.width() / 2) as f32,
-                self.window_h as f32 - (text.height() as f32) - 10.0
-            ),
-            0.0
-        ).unwrap();
+        AssetManager::draw_anchored_text(ctx, &text, Point2::new(
+            (self.window_w / 2) as f32 - (text.width() / 2) as f32,
+            self.window_h as f32 - (text.height() as f32) - 10.0
+        ))
+    }
+
+    pub fn draw_top_centered_text(&self, ctx: &mut Context, text: graphics::Text) {
+        AssetManager::draw_anchored_text(ctx, &text, Point2::new(
+            (self.window_w / 2) as f32 - (text.width() / 2) as f32, 2.0
+        ))
+    }
+
+    pub fn draw_top_left_text(&self, ctx: &mut Context, text: graphics::Text) {
+        AssetManager::draw_anchored_text(ctx, &text, Point2::new(5.0, 2.0))
+    }
+
+    pub fn draw_top_right_text(&self, ctx: &mut Context, text: graphics::Text) {
+        AssetManager::draw_anchored_text(ctx, &text, Point2::new(
+            self.window_w as f32 - (text.width() as f32) - 5.0,
+            2.0
+        ))
     }
 
     pub fn get_asset_dim(&self, asset_key: String) -> graphics::Rect {

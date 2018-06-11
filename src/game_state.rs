@@ -21,6 +21,7 @@ pub struct GameState {
     player_paused: bool,
     game_started: bool,
     lives: i32,
+    score: u32,
     entity_manager: EntityManager,
     asset_manager: AssetManager,
     wave_manager: WaveManager
@@ -37,6 +38,7 @@ impl GameState {
                 player_paused: false,
                 game_started: false,
                 lives: STARTING_LIVES,
+                score: 0,
                 entity_manager: EntityManager::new(play_space.clone()),
                 asset_manager,
                 wave_manager: WaveManager::new(play_space.clone())
@@ -70,7 +72,44 @@ impl GameState {
                     self.draw_next_level_text(ctx);
                 }
             }
+            self.draw_lives(ctx);
+            self.draw_level(ctx);
+            self.draw_score(ctx);
         }
+    }
+
+    fn draw_lives(&self, ctx: &mut Context) {
+        let next_level_text = graphics::Text::new(ctx, 
+            format!("Lives: {}", self.lives).as_str(),
+            &self.asset_manager.med_splash_font
+        ).unwrap();
+        self.asset_manager.draw_top_left_text(
+            ctx, next_level_text
+        );
+    }
+
+    fn draw_level(&self, ctx: &mut Context) {
+        let next_level_text = graphics::Text::new(ctx, 
+            format!("Level: {}", self.wave_manager.get_wave_level()).as_str(),
+            &self.asset_manager.med_splash_font
+        ).unwrap();
+        self.asset_manager.draw_top_centered_text(
+            ctx, next_level_text
+        );
+    }
+
+    fn draw_score(&self, ctx: &mut Context) {
+        let mut score_string = format!("{}", self.score);
+        while score_string.len() < 8 {
+            score_string.insert(0, '0');
+        }
+        let next_level_text = graphics::Text::new(ctx, 
+            format!("Score: {}", score_string).as_str(),
+            &self.asset_manager.med_splash_font
+        ).unwrap();
+        self.asset_manager.draw_top_right_text(
+            ctx, next_level_text
+        );
     }
 
     fn draw_next_level_text(&self, ctx: &mut Context) {

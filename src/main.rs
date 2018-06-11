@@ -8,7 +8,7 @@ use std::path;
 use ggez::*;
 use ggez::conf::*;
 
-mod game_state;
+mod game_event_handler;
 mod body;
 mod entity;
 mod entity_manager;
@@ -47,7 +47,7 @@ fn main() {
     if let Some(cb) = get_context_builder() {
         let ctx = &mut cb.build().unwrap();
 
-        let game_state = &mut game_state::GameState::new(ctx, WINDOW_W, WINDOW_H).unwrap();
+        let game_state = &mut game_event_handler::GameEventHandler::new(ctx, WINDOW_W, WINDOW_H).unwrap();
 
         event::run(ctx, game_state).unwrap();
     } else {

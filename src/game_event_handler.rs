@@ -6,6 +6,11 @@ use super::asset_manager::*;
 use super::camera::*;
 use super::wave_manager::*;
 use super::play_space::*;
+use super::entity::*;
+use super::player::*;
+use super::enemy::*;
+use super::projectile::*;
+use super::particals::*;
 
 const MAX_UPDATES_PER_SECOND: u32 = 60;
 const MS_PER_UPDATE: u64 = ((1.0/MAX_UPDATES_PER_SECOND as f64)*1000.0) as u64;
@@ -15,33 +20,53 @@ const MS_PER_FRAME: u64 = ((1.0/MAX_FRAMES_PER_SECOND as f64)*1000.0) as u64;
 const STARTING_LIVES: i32 = 10;
 
 pub struct GameState {
-    last_update: Instant,
-    last_draw: Instant,
-    camera: Camera,
-    player_paused: bool,
-    game_started: bool,
-    lives: i32,
-    score: u32,
-    entity_manager: EntityManager,
-    asset_manager: AssetManager,
-    wave_manager: WaveManager
+    pub player_paused: bool,
+    pub game_started: bool,
+    pub lives: i32,
+    pub score: u32,
+    pub player: Player,
+    pub play_space: PlaySpace,
+    pub projectiles: Vec<Projectile>,
+    pub enemies: Vec<Enemy>,
+    pub particals: Vec<Partical>
 }
 
 impl GameState {
-    pub fn new(ctx: &mut Context, window_w: u32, window_h: u32) -> GameResult<GameState> {
+    pub fn new(play_space: PlaySpace) -> GameState {
+        GameState {
+            player_paused: false,
+            game_started: false,
+            lives: STARTING_LIVES,
+            score: 0,
+            play_space,
+            player: Player::new(),
+            projectiles: vec![],
+            enemies: vec![],
+            particals: vec![]
+        }
+    }
+}
+
+pub struct GameEventHandler {
+    last_update: Instant,
+    last_draw: Instant,
+    asset_manager: AssetManager,
+    wave_manager: WaveManager,
+    camera: Camera,
+    game_state: GameState
+}
+
+impl GameEventHandler {
+    pub fn new(ctx: &mut Context, window_w: u32, window_h: u32) -> GameResult<GameEventHandler> {
         let play_space = PlaySpace::new(window_w as f32, window_h as f32);
         if let Ok(asset_manager) = AssetManager::new(ctx, window_w, window_h) {
-            return Ok(GameState {
+            return Ok(GameEventHandler {
                 last_update: Instant::now(),
                 last_draw: Instant::now(),
                 camera: Camera::new(window_w, window_h),
-                player_paused: false,
-                game_started: false,
-                lives: STARTING_LIVES,
-                score: 0,
-                entity_manager: EntityManager::new(play_space.clone()),
                 asset_manager,
-                wave_manager: WaveManager::new(play_space.clone())
+                wave_manager: WaveManager::new(play_space.clone()),
+                game_state: GameState::new(play_space.clone())
             });
         }
         Err(GameError::UnknownError("Failed to inialize game state! Game exiting..".to_string()))
@@ -49,20 +74,20 @@ impl GameState {
 
     fn update_game(&mut self) {
         if !self.is_game_paused() && !self.is_game_over() {
-            self.entity_manager.update();
-            self.wave_manager.update(&mut self.entity_manager);
+            EntityManager::update(&mut self.game_state);
+            self.wave_manager.update(&mut self.game_state);
             
-            self.lives -= self.entity_manager.update_life_lost() as i32;
+            self.game_state.lives -= EntityManager::update_life_lost(&mut self.game_state) as i32;
         }
     }
 
     fn draw_game(&self, ctx: &mut Context) {
-        self.entity_manager.draw(&self.asset_manager, ctx, self.get_interpolation_value(), &self.camera);
+        EntityManager::draw(&self.game_state, &self.asset_manager, ctx, self.get_interpolation_value(), &self.camera);
         self.draw_overlay(ctx);
     }
 
     fn draw_overlay(&self, ctx: &mut Context) {
-        if !self.game_started {
+        if !self.game_state.game_started {
             self.draw_game_start_text(ctx);
         } else {
             if self.is_game_over() {
@@ -80,7 +105,7 @@ impl GameState {
 
     fn draw_lives(&self, ctx: &mut Context) {
         let next_level_text = graphics::Text::new(ctx, 
-            format!("Lives: {}", self.lives).as_str(),
+            format!("Lives: {}", self.game_state.lives).as_str(),
             &self.asset_manager.med_splash_font
         ).unwrap();
         self.asset_manager.draw_top_left_text(
@@ -99,8 +124,8 @@ impl GameState {
     }
 
     fn draw_score(&self, ctx: &mut Context) {
-        let mut score_string = format!("{}", self.score);
-        while score_string.len() < 8 {
+        let mut score_string = format!("{}", self.game_state.score);
+        while score_string.len() < 6 {
             score_string.insert(0, '0');
         }
         let next_level_text = graphics::Text::new(ctx, 
@@ -141,9 +166,9 @@ impl GameState {
         );
     }
 
-    fn is_game_over(&self) -> bool { self.lives <= 0 }
+    fn is_game_over(&self) -> bool { self.game_state.lives <= 0 }
 
-    fn is_game_paused(&self) -> bool { !self.game_started || self.player_paused }
+    fn is_game_paused(&self) -> bool { !self.game_state.game_started || self.game_state.player_paused }
 
     fn get_interpolation_value(&self) -> f32 {
         if self.is_game_paused() {
@@ -154,11 +179,11 @@ impl GameState {
     }
 
     fn is_wave_complete(&self) -> bool {
-        self.wave_manager.wave_spawn_complete() && self.entity_manager.get_enemy_count() == 0
+        self.wave_manager.wave_spawn_complete() && EntityManager::get_enemy_count(&self.game_state) == 0
     }
 }
 
-impl event::EventHandler for GameState {
+impl event::EventHandler for GameEventHandler {
     fn update(&mut self, _ctx: &mut Context) -> GameResult<()> {
         if self.last_update.elapsed() > Duration::from_millis(MS_PER_UPDATE) {
             self.update_game();
@@ -191,12 +216,12 @@ impl event::EventHandler for GameState {
         repeat: bool
     ) {
         match keycode {
-            Keycode::W => self.entity_manager.player_move(0),
-            Keycode::S => self.entity_manager.player_move(1),
-            Keycode::D => self.entity_manager.player_move(2),
-            Keycode::A => self.entity_manager.player_move(3),
+            Keycode::W => EntityManager::player_move(&mut self.game_state, 0),
+            Keycode::S => EntityManager::player_move(&mut self.game_state, 1),
+            Keycode::D => EntityManager::player_move(&mut self.game_state, 2),
+            Keycode::A => EntityManager::player_move(&mut self.game_state, 3),
             Keycode::Space => if !repeat {
-                self.entity_manager.player_fire()
+                EntityManager::player_fire(&mut self.game_state)
             },
             _ => {}
         }
@@ -210,13 +235,13 @@ impl event::EventHandler for GameState {
         repeat: bool
     ) {
         match keycode {
-            Keycode::W => self.entity_manager.player_move_cancel(0),
-            Keycode::S => self.entity_manager.player_move_cancel(1),
-            Keycode::D => self.entity_manager.player_move_cancel(2),
-            Keycode::A => self.entity_manager.player_move_cancel(3),
-            Keycode::Escape => self.player_paused = !self.player_paused,
+            Keycode::W => EntityManager::player_move_cancel(&mut self.game_state, 0),
+            Keycode::S => EntityManager::player_move_cancel(&mut self.game_state, 1),
+            Keycode::D => EntityManager::player_move_cancel(&mut self.game_state, 2),
+            Keycode::A => EntityManager::player_move_cancel(&mut self.game_state, 3),
+            Keycode::Escape => self.game_state.player_paused = !self.game_state.player_paused,
             Keycode::Space => {
-                self.game_started = true;
+                self.game_state.game_started = true;
                 if self.is_wave_complete() {
                     self.wave_manager.set_to_progress_level();
                 }

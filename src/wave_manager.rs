@@ -5,6 +5,7 @@ use rand::{Rng, thread_rng};
 use super::entity_manager::*;
 use super::enemy::*;
 use super::play_space::*;
+use super::game_event_handler::GameState;
 
 struct Wave {
     pub spawn_rate: u32,
@@ -38,12 +39,12 @@ impl WaveManager {
         Vector2::new(self.spawn_origin.x - 25.0, self.spawn_origin.y + self.spawn_range*(rand_rang - 0.5))
     }
 
-    fn spawn(&mut self, entity_manager: &mut EntityManager) {
+    fn spawn(&mut self, game_state: &mut GameState) {
         for _i in 0..(self.current_wave.spawn_rate) {
             if let Some(enemy_type) = self.current_wave.remaining_enemies.pop() {
                 let spawn_point = self.get_random_spawn_point();
                 if let Some(enemy) = Enemy::create_enemy_by_key(enemy_type, spawn_point.x, spawn_point.y) {
-                    entity_manager.add_enemy(enemy);
+                    EntityManager::add_enemy(game_state, enemy);
                 }
             }
         }
@@ -57,10 +58,10 @@ impl WaveManager {
         }
     }
 
-    pub fn update(&mut self, entity_manager: &mut EntityManager) {
+    pub fn update(&mut self, game_state: &mut GameState) {
         self.update_wave_level();
         if self.last_spawn.elapsed() > Duration::from_millis(self.current_wave.spawn_delay_ms) {
-            self.spawn(entity_manager);
+            self.spawn(game_state);
             self.last_spawn = Instant::now();
         }
     }
@@ -78,14 +79,14 @@ impl WaveManager {
     }
 
     fn create_wave(wave_level: u32) -> Wave {
+        let mut enemies: Vec<EnemyType> = Vec::new();
+        for _i in 0..(wave_level*3) {
+            enemies.push(EnemyType::NormalDrone)
+        }
         Wave {
             spawn_rate: 1,
-            spawn_delay_ms: 1000,
-            remaining_enemies: vec![
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone,
-                EnemyType::NormalDrone
-            ]
+            spawn_delay_ms: 1000 - (wave_level as u64 * 100),
+            remaining_enemies: enemies
         }
     }
 }

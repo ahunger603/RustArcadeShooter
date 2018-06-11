@@ -74,19 +74,23 @@ impl GameState {
     }
 
     fn draw_next_level_text(&self, ctx: &mut Context) {
-        let start_text = graphics::Text::new(ctx, 
+        let next_level_text = graphics::Text::new(ctx, 
             format!("Press SPACE to start level {}!",
             self.wave_manager.get_wave_level() + 1).as_str(),
             &self.asset_manager.med_splash_font
         ).unwrap();
         self.asset_manager.draw_bottom_centered_text(
-            ctx, start_text
+            ctx, next_level_text
         );
     }
 
     fn draw_game_start_text(&self, ctx: &mut Context) {
-        let start_text = graphics::Text::new(ctx, "Press SPACE to Start!", &self.asset_manager.large_splash_font).unwrap();
+        let title_text = graphics::Text::new(ctx, "Arcade Shooter", &self.asset_manager.large_splash_font).unwrap();
+        let start_text = graphics::Text::new(ctx, "Press SPACE to start!", &self.asset_manager.med_splash_font).unwrap();
         self.asset_manager.draw_centered_text(
+            ctx, title_text
+        );
+        self.asset_manager.draw_bottom_centered_text(
             ctx, start_text
         );
     }

@@ -46,23 +46,17 @@ impl EntityManager {
     }
 
     pub fn update(&mut self) {
-        if !self.player.is_dead() {
-            self.player.update();
-            for enemy in &mut self.enemies {
-                enemy.update();
-            }
-            for projectile in self.projectiles.iter_mut(){
-                projectile.update();
-            } 
-            for partical in self.particals.iter_mut(){
-                partical.update();
-            } 
-            self.collision_resolution();
-        } else {
-            for partical in self.particals.iter_mut(){
-                partical.update();
-            } 
+        self.player.update();
+        for enemy in &mut self.enemies {
+            enemy.update();
         }
+        for projectile in self.projectiles.iter_mut(){
+            projectile.update();
+        } 
+        for partical in self.particals.iter_mut(){
+            partical.update();
+        } 
+        self.collision_resolution();
         self.update_clean_up();
     }
 

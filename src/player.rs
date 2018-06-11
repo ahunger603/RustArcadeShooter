@@ -100,6 +100,7 @@ impl Entity for Player {
     }
 
     fn set_dead(&mut self) {
+        self.move_dir = [false; 4];
         self.last_death = Instant::now();
         self.unit.set_dead()
     }

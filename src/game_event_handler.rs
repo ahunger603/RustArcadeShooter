@@ -33,7 +33,7 @@ pub struct GameState {
 
 impl GameState {
     pub fn new(play_space: PlaySpace) -> GameState {
-        let player_spawn_x = play_space.player_area.w / 3.0;
+        let player_spawn_x = play_space.player_area.w / 8.0;
         let player_spawn_y = play_space.player_area.h / 2.0;
         GameState {
             player_paused: false,

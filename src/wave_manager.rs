@@ -1,3 +1,4 @@
+use ggez::*;
 use std::time::{Instant, Duration};
 use nalgebra::Vector2;
 use rand::{Rng, thread_rng};
@@ -11,6 +12,7 @@ struct Wave {
 }
 
 pub struct WaveManager {
+    progress_wave: bool,
     spawn_origin: Vector2<f32>,
     spawn_range: f32,
     current_wave_level: u32,
@@ -19,10 +21,11 @@ pub struct WaveManager {
 }
 
 impl WaveManager {
-    pub fn new(window_w: u32, window_h: u32) -> WaveManager {
+    pub fn new(play_area: graphics::Rect) -> WaveManager {
         WaveManager {
-            spawn_origin: Vector2::new(window_w as f32 + 200.0, window_h as f32 / 2.0),
-            spawn_range: (window_h - 100) as f32,
+            progress_wave: false,
+            spawn_origin: Vector2::new(play_area.w + 200.0, play_area.h / 2.0),
+            spawn_range: play_area.h - 100.0,
             current_wave_level: 0,
             current_wave: WaveManager::create_wave(0),
             last_spawn: Instant::now()

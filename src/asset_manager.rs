@@ -5,7 +5,7 @@ use nalgebra::{Point2};
 pub struct AssetManager {
     window_w: u32,
     window_h: u32,
-    pub game_over_font: graphics::Font,
+    pub large_splash_font: graphics::Font,
     pub player: graphics::Image,
     pub drone1: graphics::Image,
     pub projectile1: graphics::Image,
@@ -17,7 +17,7 @@ impl AssetManager {
         Ok(AssetManager {
             window_w,
             window_h,
-            game_over_font: graphics::Font::new(ctx, "/fonts/OpenSans-ExtraBold.ttf", 48).unwrap(),
+            large_splash_font: graphics::Font::new(ctx, "/fonts/OpenSans-ExtraBold.ttf", 48).unwrap(),
             player: graphics::Image::new(ctx, "/playerFighter.png").unwrap(),
             drone1: graphics::Image::new(ctx, "/drone1.png").unwrap(),
             projectile1: graphics::Image::new(ctx, "/projectile1.png").unwrap(),

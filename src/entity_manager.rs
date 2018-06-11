@@ -1,5 +1,5 @@
 use ggez::*;
-use nalgebra::{Isometry2, Vector2, Point};
+use nalgebra::{Isometry2, Vector2, Vector4, Point};
 use ncollide::shape::Cuboid2;
 use ncollide::bounding_volume;
 use ncollide::bounding_volume::BoundingVolume;
@@ -14,14 +14,16 @@ use super::particals::*;
 
 pub struct EntityManager {
     player: Player,
+    play_area: graphics::Rect,
     projectiles: Vec<Projectile>,
     enemies: Vec<Enemy>,
     particals: Vec<Partical>
 }
 
 impl EntityManager {
-    pub fn new() -> EntityManager {
+    pub fn new(play_area: graphics::Rect) -> EntityManager {
         EntityManager {
+            play_area,
             player: Player::new(),
             projectiles: vec![],
             enemies: vec![],
@@ -35,6 +37,10 @@ impl EntityManager {
 
     pub fn add_enemy(&mut self, enemy: Enemy) {
         self.enemies.push(enemy);
+    }
+
+    pub fn get_enemy_count(&self) -> u32 {
+        self.enemies.len() as u32
     }
 
     pub fn update(&mut self) {
@@ -59,20 +65,18 @@ impl EntityManager {
     }
 
     fn create_entity_collision_area(entity: &Entity) -> Option<bounding_volume::AABB<Point<f32, nalgebra::U2>>> {
-        if let Some(body) = entity.get_body() {
-            return if body.collidable {
-                Some(bounding_volume::aabb(
-                    &Cuboid2::new(body.get_scaled_size()),
-                    &Isometry2::new(
-                        Vector2::new(body.pos.x, body.pos.y), 
-                        0.0)
-                    )
+        let body = entity.get_body();
+        if body.collidable {
+            Some(bounding_volume::aabb(
+                &Cuboid2::new(body.get_scaled_size()),
+                &Isometry2::new(
+                    Vector2::new(body.pos.x, body.pos.y), 
+                    0.0)
                 )
-            } else {
-                None
-            }
+            )
+        } else {
+            None
         }
-        None
     }
 
     fn ship_hit_by_projectile(ship: &mut Entity, projectile: &mut Projectile, particals: &mut Vec<Partical>) {
@@ -82,9 +86,8 @@ impl EntityManager {
 
     fn ship_death(ship: &mut Entity, particals: &mut Vec<Partical>) {
         ship.set_dead(); 
-        if let Some(body) = ship.get_body() {
-            particals.push(Partical::new_drone_death(body.pos.x + (body.size.x / 1.5), body.pos.y));
-        }
+        let ship_body = ship.get_body();
+        particals.push(Partical::new_drone_death(ship_body.pos.x + (ship_body.size.x / 1.5), ship_body.pos.y));
     }
 
     fn collision_resolution(&mut self) {
@@ -118,7 +121,9 @@ impl EntityManager {
     }
 
     fn update_clean_up(&mut self) {
-        self.enemies.retain(|enemy| !enemy.is_dead());
+        self.enemies.retain(|enemy| {
+            !enemy.is_dead()
+        });
         self.particals.retain(|partical| !partical.is_dead());
         self.projectiles.retain(|projectile| !projectile.is_dead());
     }
@@ -147,11 +152,11 @@ impl EntityManager {
     }
 
     pub fn player_fire(&mut self) {
-        if let Some(player_body) = self.player.get_body() {
-            self.projectiles.push(
-                Projectile::new(player_body.pos.x, player_body.pos.y, true)
-            );
-        }
+        let player_body = self.player.get_body();
+        self.projectiles.push(
+            Projectile::new(player_body.pos.x, player_body.pos.y, true)
+        );
+        
     }
 
     pub fn player_move(&mut self, dir: u16) {

@@ -38,7 +38,7 @@ impl Entity for Projectile {
         self.unit.draw(asset_manager, ctx, interpolation_value, camera);
     }
 
-    fn get_body(&self) -> Option<Body> {
+    fn get_body(&self) -> Body {
         self.unit.get_body()
     }
 

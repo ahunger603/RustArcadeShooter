@@ -77,8 +77,8 @@ impl Entity for Unit {
         }
     }
 
-    fn get_body(&self) -> Option<Body> {
-        Some(self.body.clone())
+    fn get_body(&self) -> Body {
+        self.body.clone()
     }
 
     fn set_body(&mut self, body: Body) {

@@ -44,7 +44,7 @@ impl GameState {
     fn update_game(&mut self) {
         if !self.get_game_paused() {
             self.entity_manager.update();
-            let lost = self.entity_manager.get_lives_lost();
+            let lost = self.entity_manager.update_life_lost();
             if lost > 0 {
                 println!("{}", lost);
             }

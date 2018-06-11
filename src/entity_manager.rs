@@ -66,7 +66,7 @@ impl EntityManager {
         self.update_clean_up();
     }
 
-    pub fn get_lives_lost(&mut self) -> u32 {
+    pub fn update_life_lost(&mut self) -> u32 {
         let mut lost = 0;
         for enemy in &mut self.enemies {
             if let Some(enemy_area) = EntityManager::create_entity_collision_area(enemy) {

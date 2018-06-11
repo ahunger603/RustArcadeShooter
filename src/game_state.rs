@@ -12,12 +12,15 @@ const MS_PER_UPDATE: u64 = ((1.0/MAX_UPDATES_PER_SECOND as f64)*1000.0) as u64;
 const MAX_FRAMES_PER_SECOND: u32 = 144;
 const MS_PER_FRAME: u64 = ((1.0/MAX_FRAMES_PER_SECOND as f64)*1000.0) as u64;
 
+const STARTING_LIVES: i32 = 10;
+
 pub struct GameState {
     last_update: Instant,
     last_draw: Instant,
     camera: Camera,
     player_paused: bool,
     game_started: bool,
+    lives: i32,
     entity_manager: EntityManager,
     asset_manager: AssetManager,
     wave_manager: WaveManager
@@ -33,6 +36,7 @@ impl GameState {
                 camera: Camera::new(window_w, window_h),
                 player_paused: false,
                 game_started: false,
+                lives: STARTING_LIVES,
                 entity_manager: EntityManager::new(play_space.clone()),
                 asset_manager,
                 wave_manager: WaveManager::new(play_space.clone())
@@ -42,16 +46,14 @@ impl GameState {
     }
 
     fn update_game(&mut self) {
-        if !self.get_game_paused() {
+        if !self.is_game_paused() && !self.is_game_over() {
             self.entity_manager.update();
-            let lost = self.entity_manager.update_life_lost();
-            if lost > 0 {
-                println!("{}", lost);
-            }
             self.wave_manager.update(&mut self.entity_manager);
             if self.is_wave_complete() {
                 
             }
+            
+            self.lives -= self.entity_manager.update_life_lost() as i32;
         }
     }
 
@@ -64,7 +66,7 @@ impl GameState {
         if !self.game_started {
             self.draw_game_start_text(ctx);
         } else {
-            if !self.entity_manager.is_player_alive() {
+            if self.is_game_over() {
                 self.draw_game_over_text(ctx);
             } else {
                 
@@ -73,7 +75,7 @@ impl GameState {
     }
 
     fn draw_game_start_text(&self, ctx: &mut Context) {
-        let start_text = graphics::Text::new(ctx, "Press a key to Start!", &self.asset_manager.large_splash_font).unwrap();
+        let start_text = graphics::Text::new(ctx, "Press SPACE to Start!", &self.asset_manager.large_splash_font).unwrap();
         self.asset_manager.draw_centered_text(
             ctx, start_text
         );
@@ -86,10 +88,12 @@ impl GameState {
         );
     }
 
-    fn get_game_paused(&self) -> bool { !self.game_started || self.player_paused }
+    fn is_game_over(&self) -> bool { self.lives <= 0 }
+
+    fn is_game_paused(&self) -> bool { !self.game_started || self.player_paused }
 
     fn get_interpolation_value(&self) -> f32 {
-        if self.get_game_paused() {
+        if self.is_game_paused() {
             0.0
         } else {
             (self.last_update.elapsed().subsec_nanos() as f32 / 1_000_000.0 ) / (MS_PER_UPDATE as f32)
@@ -152,13 +156,13 @@ impl event::EventHandler for GameState {
         keymod: Mod,
         repeat: bool
     ) {
-        self.game_started = true;
         match keycode {
             Keycode::W => self.entity_manager.player_move_cancel(0),
             Keycode::S => self.entity_manager.player_move_cancel(1),
             Keycode::D => self.entity_manager.player_move_cancel(2),
             Keycode::A => self.entity_manager.player_move_cancel(3),
             Keycode::Escape => self.player_paused = !self.player_paused,
+            Keycode::Space => self.game_started = true,
             _ => {}
         }
     }

@@ -1,5 +1,6 @@
 Rust Arcade Shooter
 ====================
+By Ashton Hunger
 
 About
 ------

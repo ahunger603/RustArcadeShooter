@@ -8,7 +8,6 @@ use ncollide::query::PointQuery;
 
 use super::asset_manager::*;
 use super::entity::*;
-use super::player::*;
 use super::enemy::*;
 use super::camera::*;
 use super::projectile::*;

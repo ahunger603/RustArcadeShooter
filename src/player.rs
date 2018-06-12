@@ -1,4 +1,9 @@
-use std::time::{Instant, Duration};
+/* Copyright (c) 2018 Ashton Hunger
+This work is available under the "MIT License”.
+Please see the file LICENSE in this distribution
+for license terms. */
+
+use std::time::{Instant};
 use std::f32;
 use ggez::*;
 use nalgebra::Vector2;

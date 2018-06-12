@@ -1,3 +1,8 @@
+/* Copyright (c) 2018 Ashton Hunger
+This work is available under the "MIT License”.
+Please see the file LICENSE in this distribution
+for license terms. */
+
 use std::time::{Instant, Duration};
 use ggez::*;
 use ggez::event::{Keycode, Mod};
@@ -215,9 +220,9 @@ impl event::EventHandler for GameEventHandler {
 
     fn key_down_event(
         &mut self,
-        ctx: &mut Context,
+        _ctx: &mut Context,
         keycode: Keycode,
-        keymod: Mod,
+        _keymod: Mod,
         repeat: bool
     ) {
         match keycode {
@@ -234,10 +239,10 @@ impl event::EventHandler for GameEventHandler {
 
     fn key_up_event(
         &mut self,
-        ctx: &mut Context,
+        _ctx: &mut Context,
         keycode: Keycode,
-        keymod: Mod,
-        repeat: bool
+        _keymod: Mod,
+        _repeat: bool
     ) {
         match keycode {
             Keycode::W => EntityManager::player_move_cancel(&mut self.game_state, 0),

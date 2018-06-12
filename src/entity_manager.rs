@@ -1,3 +1,8 @@
+/* Copyright (c) 2018 Ashton Hunger
+This work is available under the "MIT License”.
+Please see the file LICENSE in this distribution
+for license terms. */
+
 use ggez::*;
 use std::time::{Instant};
 use nalgebra::{Isometry2, Vector2, Point, Point2, Id};
@@ -178,12 +183,6 @@ impl EntityManager {
                 Projectile::new(player_body.pos.x, player_body.pos.y, true)
             );
         }
-    }
-
-    pub fn enemy_fire(game_state: &mut GameState, x: f32, y: f32) {
-        game_state.projectiles.push(
-            Projectile::new(x, y, false)
-        );
     }
 
     pub fn player_move(game_state: &mut GameState, dir: u16) {

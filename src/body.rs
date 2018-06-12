@@ -1,5 +1,9 @@
+/* Copyright (c) 2018 Ashton Hunger
+This work is available under the "MIT License”.
+Please see the file LICENSE in this distribution
+for license terms. */
+
 use nalgebra::Vector2;
-use ggez::graphics::*;
 use super::camera::*;
 
 pub struct Body {

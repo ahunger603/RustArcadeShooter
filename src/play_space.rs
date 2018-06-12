@@ -1,3 +1,8 @@
+/* Copyright (c) 2018 Ashton Hunger
+This work is available under the "MIT License”.
+Please see the file LICENSE in this distribution
+for license terms. */
+
 use ggez::graphics::{Rect};
 use nalgebra::{Isometry2, Vector2, Point, U2};
 use ncollide::shape::Cuboid2;

@@ -1,3 +1,8 @@
+/* Copyright (c) 2018 Ashton Hunger
+This work is available under the "MIT License”.
+Please see the file LICENSE in this distribution
+for license terms. */
+
 use ggez::{graphics, Context, GameResult};
 use nalgebra::{Point2};
 
@@ -78,9 +83,5 @@ impl AssetManager {
             self.window_w as f32 - (text.width() as f32) - 5.0,
             2.0
         ))
-    }
-
-    pub fn get_asset_dim(&self, asset_key: String) -> graphics::Rect {
-        self.get_asset(asset_key).get_dimensions()
     }
 }

@@ -1,3 +1,8 @@
+/* Copyright (c) 2018 Ashton Hunger
+This work is available under the "MIT License”.
+Please see the file LICENSE in this distribution
+for license terms. */
+
 use std::f32;
 use ggez::*;
 use nalgebra::Vector2;
@@ -33,8 +38,7 @@ impl Enemy {
 
     pub fn create_enemy_by_key(enemy_type: EnemyType, x:f32, y: f32) -> Option<Enemy> {
         match enemy_type {
-            EnemyType::NormalDrone => Some(Enemy::new_drone(x, y)),
-            _ => None
+            EnemyType::NormalDrone => Some(Enemy::new_drone(x, y))
         }
     }
 }

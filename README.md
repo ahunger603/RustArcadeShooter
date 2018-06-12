@@ -33,6 +33,8 @@ Explosion Effect from: https://opengameart.org/content/explosion-sheet - by: Stu
 
 Fonts from: https://fonts.google.com/specimen/Roboto - by: Christian Robertson
 
+`build.rs` - by: ggez
+
 
 License
 -------
